@@ -4,7 +4,7 @@ from setup.Ip_placer import ip_placer
 
 def Url_finding(target, target_dir):
     commands = [
-        f'waymore -i {target} -oU {target_dir}/waymore_results.txt',
+        f'cpulimit -l 85 -- waymore -i {target} -oU {target_dir}/waymore_results.txt',
         f'echo {target} | katana -ps -pss waybackarchive,commoncrawl,alienvault -f qurl >> {target_dir}/waymore_results.txt',
         f'cat {target_dir}/resolved-final-subdomains.txt | waybackurls > {target_dir}/urls-{target}.txt',
         f'echo {target} | hakrawler -d 3 -u > {target_dir}/crawled_urls.txt',
