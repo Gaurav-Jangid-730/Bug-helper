@@ -3,3 +3,9 @@ os
 argparse
 concurren
 colorama
+golang-go
+requests
+dnspython
+urllib3
+bs4
+idna

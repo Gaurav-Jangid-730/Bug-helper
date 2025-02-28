@@ -9,6 +9,7 @@ def dns_enum(target_dir):
     for subdomain in subdomains.readlines():
         subdomain = subdomain.strip()
         commands = [
+            f'dig {subdomain} +short > {target_dir}/DNS/dig-ip-{subdomain}.txt',
             f'dig {subdomain} ANY > {target_dir}/DNS/dig-{subdomain}.txt',
             f'dig ns {subdomain} +short > {target_dir}/DNS/dig-ns-{subdomain}.txt',
             f'host -a {subdomain} > {target_dir}/DNS/host-{subdomain}.txt',
