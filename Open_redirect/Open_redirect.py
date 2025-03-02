@@ -52,7 +52,11 @@ def test_redirects(redirect_urls):
         for payload in payloads:
             for param in redirect_params:
                 if param in query:
-                    new_query = re.sub(f'({param}=)[^&]+', r'\1' + payload, query)
+                    new_query = re.sub(
+                        f'({param}=)[^&]+',
+                        lambda m: f"{m.group(1)}{payload}",
+                        query
+                    )
                     test_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}?{new_query}"
                     
                     try:
