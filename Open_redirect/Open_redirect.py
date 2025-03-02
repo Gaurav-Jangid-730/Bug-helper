@@ -19,14 +19,16 @@ payloads = [
 # Common redirect parameters
 redirect_params = ["redirect", "url", "next", "return", "r", "u", "goto", "target", "forward", "continue"]
 
-def fetch_urls(domain):
+def fetch_urls(bug_path,domain):
     """Find historical URLs using waybackurls & gau."""
     print(f"{Fore.BLUE}[+] Fetching URLs from Wayback Machine and GAU...")
-    wayback_urls = run_command(f"echo {domain} | waybackurls")
-    gau_urls = run_command(f"echo {domain} | gau")
-    urls = list(set(wayback_urls + gau_urls))  # Remove duplicates
-    with open("all_urls.txt", "w") as f:
-        f.write("\n".join(urls))
+    commands = [f"echo {domain} | waybackurls > {bug_path}/{domain}_open_redirect.txt",
+                f"echo {domain} | gau >> {bug_path}/{domain}_open_redirect.txt"]
+    run_command(commands)
+    urls = None
+    with open(f'{bug_path}/{domain}_open_redirect.txt','r') as f:
+        op_url = [line.strip() for line in f]
+        urls = list(op_url)
     return urls
 
 def filter_redirect_urls(bug_path,urls):
@@ -69,7 +71,7 @@ def open_redirect(bug_path,input_file):
         domains = [line.strip() for line in f]
     urls = []
     for domain in domains:
-        urls.extend(fetch_urls(domain))
+        urls.extend(fetch_urls(bug_path,domain))
         redirect_urls = filter_redirect_urls(bug_path,urls)
         vulnerable_urls = test_redirects(redirect_urls)
         with open(f"{bug_path}/{domain}_vulnerable_urls.txt", "w") as f:
