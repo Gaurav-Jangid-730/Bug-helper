@@ -1,7 +1,6 @@
-import os
 import re
 import requests
-import subprocess
+import threading
 import concurrent.futures
 from Runner.Runner import run_command
 from setup.remove_file import delete_empty_text_files
@@ -11,6 +10,7 @@ from colorama import Fore, Style , init
 init(autoreset=True)
 
 THREADS = 100
+print_lock = threading.Lock()
 # Define payloads for open redirect testing
 payloads = [
     "http://evil.com", "https://evil.com", "//evil.com", 
@@ -57,11 +57,12 @@ def test_url(url, payload, param, headers):
         try:
             response = requests.get(test_url, headers=headers, allow_redirects=False)
             if response.status_code in [301, 302] and "evil.com" in response.headers.get("Location", ""):
-                print(f"{Fore.GREEN}[!] Open Redirect Found: {test_url}{Style.RESET_ALL}")
+                with print_lock:
+                    print(f"{Fore.GREEN}[!] Open Redirect Found: {test_url}{Style.RESET_ALL}")
                 return test_url
         except requests.exceptions.RequestException as e:
-            print(f"{Fore.RED}[-] Error testing {test_url}: {e}{Style.RESET_ALL}")
-    
+            with print_lock:
+                print(f"{Fore.RED}[-] Error testing {test_url}: {e}{Style.RESET_ALL}")
     return None
 
 def test_redirects(redirect_urls):
