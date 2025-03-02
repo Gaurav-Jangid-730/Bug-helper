@@ -1,5 +1,5 @@
 from Runner.Runner import run_section
-from DNS_Transfer import main
+from DNS_Enumration.DNS_Transfer import main
 from colorama import Fore, Style, init
 
 init(autoreset=True)
