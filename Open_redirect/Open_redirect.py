@@ -73,8 +73,8 @@ def test_redirects(redirect_urls):
 def open_redirect(bug_path,input_file):
     with open(input_file, 'r') as f:
         domains = [line.strip() for line in f]
-    urls = []
     for domain in domains:
+        urls = []
         urls.extend(fetch_urls(bug_path,domain))
         redirect_urls = filter_redirect_urls(bug_path,urls)
         vulnerable_urls = test_redirects(redirect_urls)
