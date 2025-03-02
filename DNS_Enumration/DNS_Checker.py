@@ -1,4 +1,5 @@
 from Runner.Runner import run_section
+from DNS_Transfer import main
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -28,3 +29,4 @@ def dns_enum(target_dir):
                 f'fierce --dns-servers {ns} > {target_dir}/DNS/NS/fierce-{subdomain}-{ns}.txt'
             ]
             run_section(f'Finding dns transfer in {subdomain}',command)
+    main(input_file)

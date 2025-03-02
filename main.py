@@ -4,6 +4,7 @@ from setup.remove_file import delete_empty_text_files
 from subdomain_Enumatration.subdomain_finder import subdomain_finding
 from setup.check_dependency import install_tools
 from setup.setup_kali_tools import setup
+from Subdomain_takeover.subdomain_takeover import main
 from DNS_Enumration.DNS_Checker import dns_enum
 from URL_Extractor.url_finder import Url_finding
 from XSS_scanner.xss_scanning import xss_scanning
@@ -19,7 +20,8 @@ def display_logo():
         ██╔══██╗██║   ██║██║   ██║╚════╝██╔══██║██╔══╝  ██║     ██╔═══╝ ██╔══╝  ██╔══██╗
         ██████╔╝╚██████╔╝╚██████╔╝      ██║  ██║███████╗███████╗██║     ███████╗██║  ██║
         ╚═════╝  ╚═════╝  ╚═════╝       ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
-"""
+                                                            ~ CREATED BY : GAURAV SHARMA
+        """
     os.system('cls' if os.name == 'nt' else 'clear')
     print(logo)
 
@@ -60,10 +62,11 @@ def parse_function_selection(selection):
 def execute_functions(selected_functions, target, target_dir):
     functions = {
         1: lambda: subdomain_finding(target, target_dir),
-        2: lambda: dns_enum(target_dir),
-        3: lambda: delete_empty_text_files(f"{target_dir}/DNS"),
-        4: lambda: Url_finding(target, target_dir),
-        5: lambda: xss_scanning(target_dir)
+        2: lambda: main(f'{target_dir}/resolved-final-subdomains.txt'),
+        3: lambda: dns_enum(target_dir),
+        4: lambda: delete_empty_text_files(f"{target_dir}/DNS"),
+        5: lambda: Url_finding(target, target_dir),
+        6: lambda: xss_scanning(target_dir)
     }
     
     if 0 in selected_functions:
@@ -93,10 +96,11 @@ if __name__ == "__main__":
     print(f"{Fore.YELLOW}\nSelect Functions to Run:")
     print("0 - Run all functions in order")
     print("1 - Subdomain Enumeration")
-    print("2 - DNS Enumeration")
-    print("3 - Remove Empty Files")
-    print("4 - URL Extraction")
-    print("5 - XSS Scanning")
+    print("2 - Performing Subdomain Takeover")
+    print("3 - DNS Enumeration")
+    print("4 - Remove Empty Files")
+    print("5 - URL Extraction")
+    print("6 - XSS Scanning")
     
     selected_input = input(f"{Fore.YELLOW}Enter function numbers (e.g., 1-2 3 6): ")
     os.system('cls' if os.name == 'nt' else 'clear')

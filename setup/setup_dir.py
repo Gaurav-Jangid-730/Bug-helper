@@ -1,4 +1,7 @@
 import os
+from colorama import Fore, init
+
+init(autoreset=True)
 
 def setup_directories(target):
     home_dir = os.path.expanduser("~")
@@ -12,9 +15,9 @@ def setup_directories(target):
     ns_dir = os.path.join(Dns_enum,"NS")
     if not os.path.exists(bug_dir):
         os.makedirs(bug_dir)
-        print(f"Created 'bug' folder at: {bug_dir}")
+        print(f"{Fore.YELLOW}[INFO] Created 'bug' folder at: {bug_dir}")
     else:
-        print(f"'bug' folder already exists at: {bug_dir}")
+        print(f"{Fore.GREEN}[OK] 'bug' folder already exists at: {bug_dir}")
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
         os.makedirs(pay_dir)
@@ -23,7 +26,7 @@ def setup_directories(target):
         os.makedirs(interest_dir)
         os.makedirs(Dns_enum)
         os.makedirs(ns_dir)
-        print(f"Created {target} folder at: {target_dir}")
+        print(f"{Fore.YELLOW}[INFO]Created {target} folder at: {target_dir}")
     else:
-        print(f"{target} folder already exists at: {target_dir}")
+        print(f"{Fore.GREEN}[OK] {target} folder already exists at: {target_dir}")
     return target_dir
