@@ -6,7 +6,7 @@ import concurrent.futures
 from Runner.Runner import run_command
 from setup.remove_file import delete_empty_text_files
 from urllib.parse import urlparse, urlencode
-from colorama import Fore, init
+from colorama import Fore, Style , init
 
 init(autoreset=True)
 
