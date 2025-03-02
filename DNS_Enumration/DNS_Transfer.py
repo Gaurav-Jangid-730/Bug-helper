@@ -1,7 +1,6 @@
 import dns.resolver
 import dns.query
 import dns.zone
-import argparse
 import tldextract
 from colorama import Fore, init
 
@@ -28,13 +27,15 @@ def get_ipv6(ns):
     except:
         return []
 
-def check_zone_transfer(ns, domain):
+def check_zone_transfer(ns, domain,target_dir):
     """Try Zone Transfer on the given NS"""
     try:
         ns_ip = dns.resolver.resolve(ns, 'A')[0].to_text()
         print(f"{Fore.YELLOW}[*] Trying Zone Transfer on {ns} ({ns_ip})")
         zone = dns.zone.from_xfr(dns.query.xfr(ns_ip, domain))
         print(f"\n{Fore.GREEN}[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
+        with open(f'{target_dir}/LOGS.txt','a') as f:
+            f.write(f"\n{Fore.GREEN}[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
         return [name.to_text() for name, _ in zone.nodes.items()]
     except Exception:
         print(f"{Fore.RED}[-] Zone Transfer failed on {ns} for {domain}")
@@ -64,7 +65,7 @@ def check_cname_hijack(subdomain):
     except dns.resolver.NXDOMAIN:
         print(f"{Fore.BLUE}[!] {subdomain} might be a dangling CNAME")
 
-def main(input_file):
+def DNS_transfer(input_file,target_dir):
     with open(input_file, 'r') as f:
         subdomains = [line.strip() for line in f]
     
@@ -78,12 +79,6 @@ def main(input_file):
             if ipv6:
                 print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
             
-            check_zone_transfer(ns, domain)
+            check_zone_transfer(ns, domain,target_dir)
             check_recursive_dns(ns)
             check_cname_hijack(domain)
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Automated DNS Security Scanner")
-    parser.add_argument("-f", "--file", required=True, help="File containing subdomains")
-    args = parser.parse_args()
-    main(args.file)

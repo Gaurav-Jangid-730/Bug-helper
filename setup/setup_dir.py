@@ -26,6 +26,9 @@ def setup_directories(target):
         os.makedirs(interest_dir)
         os.makedirs(Dns_enum)
         os.makedirs(ns_dir)
+        with open(f'{target_dir}/LOGS.txt','+w') as f:
+            f.write("[+] Here is the List of Potential Bug's")
+            f.close()
         print(f"{Fore.YELLOW}[INFO]Created {target} folder at: {target_dir}")
     else:
         print(f"{Fore.GREEN}[OK] {target} folder already exists at: {target_dir}")

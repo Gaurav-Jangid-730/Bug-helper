@@ -4,7 +4,8 @@ from setup.remove_file import delete_empty_text_files
 from subdomain_Enumatration.subdomain_finder import subdomain_finding
 from setup.check_dependency import install_tools
 from setup.setup_kali_tools import setup
-from Subdomain_takeover.subdomain_takeover import main
+from Subdomain_takeover.subdomain_takeover import subdomain_takeover
+from Open_redirect.Open_redirect import open_redirect
 from DNS_Enumration.DNS_Checker import dns_enum
 from URL_Extractor.url_finder import Url_finding
 from XSS_scanner.xss_scanning import xss_scanning
@@ -62,9 +63,9 @@ def parse_function_selection(selection):
 def execute_functions(selected_functions, target, target_dir):
     functions = {
         1: lambda: subdomain_finding(target, target_dir),
-        2: lambda: main(f'{target_dir}/resolved-final-subdomains.txt'),
-        3: lambda: dns_enum(target_dir),
-        4: lambda: delete_empty_text_files(f"{target_dir}/DNS"),
+        2: lambda: dns_enum(target_dir),
+        3: lambda: subdomain_takeover(target_dir,f'{target_dir}/resolved-final-subdomains.txt'),
+        4: lambda: open_redirect(target_dir,f'{target_dir}/resolved-final-subdomains.txt'),
         5: lambda: Url_finding(target, target_dir),
         6: lambda: xss_scanning(target_dir)
     }
@@ -96,9 +97,9 @@ if __name__ == "__main__":
     print(f"{Fore.YELLOW}\nSelect Functions to Run:")
     print("0 - Run all functions in order")
     print("1 - Subdomain Enumeration")
-    print("2 - Performing Subdomain Takeover")
-    print("3 - DNS Enumeration")
-    print("4 - Remove Empty Files")
+    print("2 - DNS Enumeration")
+    print("3 - Performing Subdomain Takeover")
+    print("4 - Open Redirection Bug")
     print("5 - URL Extraction")
     print("6 - XSS Scanning")
     

@@ -38,14 +38,13 @@ def install_tools():
     
     for tool, commands in tools.items():
         if is_tool_installed(tool):
-            print(f"{Fore.WHITE}[OK] {tool} is already installed.")
+            print(f"{Fore.GREEN}[OK] {tool} is already installed.")
         else:
             print(f"{Fore.YELLOW}[INFO] Installing {tool}...")
             for command in commands:
                 try:
                     subprocess.run(command, shell=True, check=True)
-                    print(f"{Fore.GREEN}[SUCCESS] {tool} installed successfully.")
+                    print(f"{Fore.BLUE}[SUCCESS] {tool} installed successfully.")
                     break
                 except subprocess.CalledProcessError as e:
                     print(f"{Fore.RED}[ERROR] Failed to install {tool}. Error: {e}")
-

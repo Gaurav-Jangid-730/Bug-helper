@@ -1,5 +1,6 @@
 from Runner.Runner import run_section
-from DNS_Enumration.DNS_Transfer import main
+from DNS_Enumration.DNS_Transfer import DNS_transfer
+from setup.remove_file import delete_empty_text_files
 from colorama import Fore, Style, init
 
 init(autoreset=True)
@@ -29,4 +30,5 @@ def dns_enum(target_dir):
                 f'fierce --dns-servers {ns} > {target_dir}/DNS/NS/fierce-{subdomain}-{ns}.txt'
             ]
             run_section(f'Finding dns transfer in {subdomain}',command)
-    main(input_file)
+    DNS_transfer(input_file,target_dir)
+    delete_empty_text_files(target_dir)
