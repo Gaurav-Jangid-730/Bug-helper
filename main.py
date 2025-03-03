@@ -65,8 +65,8 @@ def execute_functions(selected_functions, target, target_dir):
         1: lambda: subdomain_finding(target, target_dir),
         2: lambda: dns_enum(target_dir),
         3: lambda: subdomain_takeover(target_dir,f'{target_dir}/resolved-final-subdomains.txt'),
-        4: lambda: open_redirect(target_dir,f'{target_dir}/resolved-final-subdomains.txt'),
-        5: lambda: Url_finding(target, target_dir),
+        4: lambda: Url_finding(target, target_dir),
+        5: lambda: open_redirect(target_dir,target),
         6: lambda: xss_scanning(target_dir)
     }
     
@@ -99,8 +99,8 @@ if __name__ == "__main__":
     print("1 - Subdomain Enumeration")
     print("2 - DNS Enumeration")
     print("3 - Performing Subdomain Takeover")
-    print("4 - Open Redirection Bug")
-    print("5 - URL Extraction")
+    print("4 - URL Extraction")
+    print("5 - Open Redirection Bug")
     print("6 - XSS Scanning")
     
     selected_input = input(f"{Fore.YELLOW}Enter function numbers (e.g., 1-2 3 6): ")

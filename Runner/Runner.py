@@ -7,7 +7,7 @@ init(autoreset=True)
 def run_command(commands):
     for command in commands:
         try:
-            print(f"{Fore.CYAN}{'-'*80}\n{Fore.GREEN}Running: {Fore.CYAN}{command}\n{'-'*80}")
+            print(f"{Fore.CYAN}{'-'*100}\n{Fore.GREEN}Running: {Fore.CYAN}{command}\n{'-'*100}")
             process = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             for line in process.stdout:
                 print(line, end="")
