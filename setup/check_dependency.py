@@ -1,5 +1,6 @@
 import subprocess
 import os
+from main import display_logo
 from colorama import Fore, init
 
 init(autoreset=True)
@@ -60,4 +61,4 @@ def install_tools():
                     print(f"{Fore.RED}[ERROR] Failed to install {tool}. Error: {e}")
     
     if all_installed:
-        print("All tools are already installed.")
+        display_logo()
