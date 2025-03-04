@@ -1,3 +1,8 @@
+import os
+from colorama import Fore, init
+
+init(autoreset=True)
+
 def display_logo():
     logo = f"""{Fore.RED}
         ██████╗ ██╗   ██╗ ██████╗       ██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗ 
