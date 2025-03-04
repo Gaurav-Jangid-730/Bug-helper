@@ -1,6 +1,6 @@
 import subprocess
 import os
-from main import display_logo
+from logo import display_logo
 from colorama import Fore, init
 
 init(autoreset=True)

@@ -1,4 +1,5 @@
 import os
+from logo import display_logo
 from setup.setup_dir import setup_directories
 from setup.remove_file import delete_empty_text_files
 from subdomain_Enumatration.subdomain_finder import subdomain_finding
@@ -12,19 +13,6 @@ from XSS_scanner.xss_scanning import xss_scanning
 from colorama import Fore, init
 
 init(autoreset=True)
-
-def display_logo():
-    logo = f"""{Fore.RED}
-        ██████╗ ██╗   ██╗ ██████╗       ██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗ 
-        ██╔══██╗██║   ██║██╔════╝       ██║  ██║██╔════╝██║     ██╔══██╗██╔════╝██╔══██╗
-        ██████╔╝██║   ██║██║  ███╗█████╗███████║█████╗  ██║     ██████╔╝█████╗  ██████╔╝
-        ██╔══██╗██║   ██║██║   ██║╚════╝██╔══██║██╔══╝  ██║     ██╔═══╝ ██╔══╝  ██╔══██╗
-        ██████╔╝╚██████╔╝╚██████╔╝      ██║  ██║███████╗███████╗██║     ███████╗██║  ██║
-        ╚═════╝  ╚═════╝  ╚═════╝       ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
-                                                            ~ CREATED BY : GAURAV SHARMA
-        """
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(logo)
 
 def select_target():
     print(f"{Fore.YELLOW}\nSelect Target Input Method:")
