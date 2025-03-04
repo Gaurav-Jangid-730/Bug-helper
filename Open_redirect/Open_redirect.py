@@ -78,7 +78,7 @@ def test_redirects(redirect_urls , bug_path):
     headers = {"User-Agent": "Mozilla/5.0"}
     # Define payloads for open redirect testing
     payloads = []
-    with open(f'{bug_path}/Open_redirect/payloads.txt', 'r') as f:
+    with open(f'Open_redirect/payloads.txt', 'r') as f:
         payloads = [line.strip() for line in f]
     # Prepare tasks for threading
     tasks = []
