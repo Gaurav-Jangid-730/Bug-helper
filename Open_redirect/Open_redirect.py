@@ -64,7 +64,7 @@ def test_url(url, payload, headers, bug_path):
             with print_lock:
                 print(f"{Fore.GREEN}[!] Open Redirect Found: {test_url}")  # Green Text Output
                 with open(f'{bug_path}/LOGS.txt','a') as f:
-                    f.write(f"{Fore.GREEN}[!] Open Redirect Found: {test_url}")
+                    f.write(f"\n{Fore.GREEN}[!] Open Redirect Found: {test_url}\n")
             return test_url
     except requests.exceptions.RequestException as e:
         with print_lock:
@@ -108,5 +108,5 @@ def open_redirect(bug_path,target):
         f.write("\n".join(vulnerable_urls))
     print(f"{Fore.GREEN}[+] Scan Completed! Check open_redirect_vulnerable_urls.txt")
     with open(f"{bug_path}/LOGS.txt",'a') as f:
-        f.write(f"{Fore.GREEN}[+] Check File open_redirect_vulnerable_urls.txt For Open Redirect Vulnerablity")
+        f.write(f"\n{Fore.GREEN}[+] Check File open_redirect_vulnerable_urls.txt For Open Redirect Vulnerablity\n")
     delete_empty_text_files(bug_path)

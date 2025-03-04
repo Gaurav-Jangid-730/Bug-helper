@@ -60,9 +60,9 @@ def parse_function_selection(selection):
     
     return selected_functions
 
-def execute_functions(selected_functions, target, target_dir):
+def execute_functions(selected_functions, target, target_dir,enable_bruteforce):
     functions = {
-        1: lambda: subdomain_finding(target, target_dir),
+        1: lambda: subdomain_finding(target, target_dir, enable_bruteforce),
         2: lambda: dns_enum(target_dir),
         3: lambda: subdomain_takeover(target_dir,f'{target_dir}/resolved-final-subdomains.txt'),
         4: lambda: Url_finding(target, target_dir),
@@ -106,8 +106,14 @@ if __name__ == "__main__":
     selected_input = input(f"{Fore.YELLOW}Enter function numbers (e.g., 1-2 3 6): ")
     os.system('cls' if os.name == 'nt' else 'clear')
     display_logo()
-    selected_functions = parse_function_selection(selected_input)
 
-    execute_functions(selected_functions, target, target_dir)
+    print(f"{Fore.YELLOW}\nDo you want to enable brute force scanning?")
+    print("1 - Yes")
+    print("2 - No")
+    bruteforce_choice = input(f"{Fore.YELLOW}Enter your choice (1/2): ")
+    enable_bruteforce = bruteforce_choice == "1"
+    selected_functions = parse_function_selection(selected_input)
+    
+    execute_functions(selected_functions, target, target_dir , enable_bruteforce)
     
     print(f"{Fore.GREEN}\nAll tasks completed. Check the results in {target_dir}")

@@ -24,7 +24,7 @@ def check_cname_takeover(target_dir,subdomain):
                 if service in cname_target:
                     print(f"{Fore.GREEN}[!] Potential Takeover: {subdomain} -> {cname_target}")
                     with open(f"{target_dir}/LOGS.txt",'a') as f:
-                        f.write(f"{Fore.GREEN}[!] Potential Takeover: {subdomain} -> {cname_target}")
+                        f.write(f"\n{Fore.GREEN}[!] Potential Takeover: {subdomain} -> {cname_target}\n")
                     return cname_target
             print(f"{Fore.BLUE}[*] CNAME: {subdomain} -> {cname_target} (Safe)")
     except dns.resolver.NoAnswer:
@@ -32,7 +32,7 @@ def check_cname_takeover(target_dir,subdomain):
     except dns.resolver.NXDOMAIN:
         print(f"{Fore.YELLOW}[!] {subdomain} does not exist (Potentially Vulnerable)")
         with open(f"{target_dir}/LOGS.txt",'a') as f:
-                f.write(f"{Fore.YELLOW}[!] {subdomain} does not exist (Potentially Vulnerable)")
+                f.write(f"\n{Fore.YELLOW}[!] {subdomain} does not exist (Potentially Vulnerable)\n")
     except Exception as e:
         print(f"{Fore.RED}[!] Error checking {subdomain}: {e}")
 

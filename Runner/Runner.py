@@ -22,6 +22,6 @@ def run_command(commands):
             print(f"{Fore.RED}{e}")
 
 def run_section(section_name, commands):
-    print(f"\n{Fore.MAGENTA}{'='*80}\nStarting Section: {section_name}\n{'='*80}")
+    print(f"\n{Fore.MAGENTA}{'='*100}\nStarting Section: {section_name}\n{'='*100}")
     run_command(commands)
-    print(f"\n{Fore.MAGENTA}{'='*80}\nCompleted Section: {section_name}\n{'='*80}")
+    print(f"\n{Fore.MAGENTA}{'='*100}\nCompleted Section: {section_name}\n{'='*100}")
