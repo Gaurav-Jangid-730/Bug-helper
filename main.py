@@ -7,7 +7,7 @@ from setup.check_dependency import install_tools
 from setup.setup_kali_tools import setup
 from Subdomain_takeover.subdomain_takeover import subdomain_takeover
 from Open_redirect.Open_redirect import open_redirect
-from DNS_Enumration.DNS_Checker import dns_enum
+from DNS_Enumration.DNS_Transfer import DNS_transfer
 from URL_Extractor.url_finder import Url_finding
 from XSS_scanner.xss_scanning import xss_scanning
 from colorama import Fore, init
@@ -57,7 +57,7 @@ def parse_function_selection(selection):
 def execute_functions(selected_functions, target, target_dir, enable_bruteforce):
     functions = {
         1: lambda: subdomain_finding(target, target_dir, enable_bruteforce),
-        2: lambda: dns_enum(target_dir),
+        2: lambda: DNS_transfer(target_dir),
         3: lambda: subdomain_takeover(target_dir, f'{target_dir}/resolved-final-subdomains.txt'),
         4: lambda: Url_finding(target, target_dir),
         5: lambda: open_redirect(target_dir, target),
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     print(f"{Fore.YELLOW}\nSelect Functions to Run:")
     print("0 - Run all functions in order")
     print("1 - Subdomain Enumeration")
-    print("2 - DNS Enumeration")
+    print("2 - DNS Zone Transfer")
     print("3 - Performing Subdomain Takeover")
     print("4 - URL Extraction")
     print("5 - Open Redirection Bug")

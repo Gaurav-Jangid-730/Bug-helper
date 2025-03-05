@@ -2,6 +2,7 @@ import dns.resolver
 import dns.query
 import dns.zone
 import tldextract
+from setup.remove_file import delete_empty_text_files
 from colorama import Fore, init
 
 init(autoreset=True)
@@ -73,20 +74,30 @@ def check_cname_hijack(subdomain):
         print(f"{Fore.RED}[-] CNAME lookup timed out for {subdomain}, try again later.")
 
 
-def DNS_transfer(input_file,target_dir):
+def DNS_transfer(target_dir):
+    input_file = f'{target_dir}/resolved-final-subdomains.txt'
     with open(input_file, 'r') as f:
         subdomains = [line.strip() for line in f]
     
     for domain in subdomains:
         root_domain = get_root_domain(domain)
         print(f"\n{Fore.YELLOW}[*] Scanning {root_domain}")
-        name_servers = get_nameservers(root_domain)
         
+        try:
+            name_servers = get_nameservers(root_domain)
+        except dns.resolver.LifetimeTimeout:
+            print(f"{Fore.RED}[-] NS lookup timed out for {root_domain}")
+            continue  # Skip this domain and move to the next one
+
         for ns in name_servers:
-            ipv6 = get_ipv6(ns)
-            if ipv6:
-                print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
-            
-            check_zone_transfer(ns, domain,target_dir)
-            check_recursive_dns(ns)
-            check_cname_hijack(domain)
+            try:
+                ipv6 = get_ipv6(ns)
+                if ipv6:
+                    print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
+
+                check_zone_transfer(ns, domain, target_dir)
+                check_recursive_dns(ns)
+                check_cname_hijack(domain)
+            except dns.resolver.LifetimeTimeout:
+                print(f"{Fore.RED}[-] DNS query timed out for {ns}, skipping...")
+        delete_empty_text_files(target_dir)
