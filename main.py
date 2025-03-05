@@ -14,17 +14,23 @@ from colorama import Fore, init
 
 init(autoreset=True)
 
-def select_target():
-    print(f"{Fore.YELLOW}\nSelect Target Input Method:")
-    print(f"{Fore.YELLOW}1. Use Target From Environment Variable")
-    print(f"{Fore.YELLOW}2. Enter Target Manually")
+def get_target_list():
+    print(f"{Fore.YELLOW}\nChoose Target Mode:")
+    print(f"{Fore.YELLOW}1. Single Target")
+    print(f"{Fore.YELLOW}2. Multiple Targets (from file)")
     choice = input("Enter choice (1/2): ")
     os.system('cls' if os.name == 'nt' else 'clear')
     display_logo()
+    
     if choice == "1":
-        return os.getenv("target")
+        return [input(f"{Fore.YELLOW}Enter the target domain: ")]
     elif choice == "2":
-        return input(f"{Fore.YELLOW}Enter the target domain: ")
+        file_path = input(f"{Fore.YELLOW}Enter the path to the target file: ")
+        if not os.path.exists(file_path):
+            print(f"{Fore.RED}Error: File not found.")
+            exit(1)
+        with open(file_path, "r") as f:
+            return [line.strip() for line in f if line.strip()]
     else:
         print(f"{Fore.RED}Invalid choice. Exiting.")
         exit(1)
@@ -48,13 +54,13 @@ def parse_function_selection(selection):
     
     return selected_functions
 
-def execute_functions(selected_functions, target, target_dir,enable_bruteforce):
+def execute_functions(selected_functions, target, target_dir, enable_bruteforce):
     functions = {
         1: lambda: subdomain_finding(target, target_dir, enable_bruteforce),
         2: lambda: dns_enum(target_dir),
-        3: lambda: subdomain_takeover(target_dir,f'{target_dir}/resolved-final-subdomains.txt'),
+        3: lambda: subdomain_takeover(target_dir, f'{target_dir}/resolved-final-subdomains.txt'),
         4: lambda: Url_finding(target, target_dir),
-        5: lambda: open_redirect(target_dir,target),
+        5: lambda: open_redirect(target_dir, target),
         6: lambda: xss_scanning(target_dir)
     }
     
@@ -74,13 +80,7 @@ if __name__ == "__main__":
     display_logo()
     setup()
     install_tools()
-    target = select_target()
-    if not target:
-        print(f"{Fore.RED}Error: No target domain provided.")
-        exit(1)
-    
-    print(f"{Fore.WHITE}\nSetup in progress...\n")
-    target_dir = setup_directories(target)
+    targets = get_target_list()
     
     print(f"{Fore.YELLOW}\nSelect Functions to Run:")
     print("0 - Run all functions in order")
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     selected_input = input(f"{Fore.YELLOW}Enter function numbers (e.g., 1-2 3 6): ")
     os.system('cls' if os.name == 'nt' else 'clear')
     display_logo()
-
+    
     print(f"{Fore.YELLOW}\nDo you want to enable brute force scanning?")
     print("1 - Yes")
     print("2 - No")
@@ -102,6 +102,8 @@ if __name__ == "__main__":
     enable_bruteforce = bruteforce_choice == "1"
     selected_functions = parse_function_selection(selected_input)
     
-    execute_functions(selected_functions, target, target_dir , enable_bruteforce)
-    
-    print(f"{Fore.GREEN}\nAll tasks completed. Check the results in {target_dir}")
+    for target in targets:
+        print(f"{Fore.WHITE}\nSetup in progress for {target}...\n")
+        target_dir = setup_directories(target)
+        execute_functions(selected_functions, target, target_dir, enable_bruteforce)
+        print(f"{Fore.GREEN}\nAll tasks completed for {target}. Check the results in {target_dir}")
