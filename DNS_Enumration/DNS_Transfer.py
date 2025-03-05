@@ -54,8 +54,13 @@ def check_recursive_dns(ns):
     return False
 
 def check_cname_hijack(subdomain):
+    resolver = dns.resolver.Resolver()
+    resolver.timeout = 10  # Increase timeout from 5 to 10 seconds
+    resolver.lifetime = 15  # Extend total lifetime for queries
+    resolver.nameservers = ["8.8.8.8", "1.1.1.1"]  # Use Google & Cloudflare DNS
+
     try:
-        answers = dns.resolver.resolve(subdomain, 'CNAME')
+        answers = resolver.resolve(subdomain, 'CNAME')
         for rdata in answers:
             cname_target = rdata.target.to_text()
             if "sendgrid.net" in cname_target:  # Example third-party service
@@ -64,6 +69,9 @@ def check_cname_hijack(subdomain):
         pass
     except dns.resolver.NXDOMAIN:
         print(f"{Fore.BLUE}[!] {subdomain} might be a dangling CNAME")
+    except dns.resolver.LifetimeTimeout:
+        print(f"{Fore.RED}[-] CNAME lookup timed out for {subdomain}, try again later.")
+
 
 def DNS_transfer(input_file,target_dir):
     with open(input_file, 'r') as f:
