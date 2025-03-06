@@ -1,11 +1,10 @@
 import os
 from Path import interactive_UI
 from logo import display_logo
-from setup.setup_dir import setup_directories
-from setup.remove_file import delete_empty_text_files
+from Start_up.setup_dir import setup_directories
 from subdomain_Enumatration.subdomain_finder import subdomain_finding
-from setup.check_dependency import install_tools
-from setup.setup_kali_tools import setup
+from Start_up.check_dependency import install_tools
+from Start_up.setup_kali_tools import setup
 from Subdomain_takeover.subdomain_takeover import subdomain_takeover
 from Open_redirect.Open_redirect import open_redirect
 from DNS_Enumration.DNS_Transfer import DNS_transfer
@@ -14,6 +13,26 @@ from XSS_scanner.xss_scanning import xss_scanning
 from colorama import Fore, init
 
 init(autoreset=True)
+
+def check_for_updates():
+    repo_url = "https://github.com/your-username/Bug-helper.git"  # Replace with actual repo URL
+    repo_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    if not os.path.exists(os.path.join(repo_dir, ".git")):
+        print(f"{Fore.RED}Git repository not found. Make sure the tool is cloned from GitHub.")
+        return
+    
+    print(f"{Fore.YELLOW}Checking for updates...")
+    subprocess.run(["git", "fetch"], cwd=repo_dir)
+    status = subprocess.run(["git", "status", "-uno"], capture_output=True, text=True, cwd=repo_dir)
+    
+    if "Your branch is behind" in status.stdout:
+        print(f"{Fore.GREEN}Update available! Pulling latest changes...")
+        subprocess.run(["git", "pull"], cwd=repo_dir)
+        print(f"{Fore.GREEN}Update completed. Restart the tool to apply changes.")
+        exit(0)
+    else:
+        print(f"{Fore.GREEN}Your tool is up to date.")
 
 def get_target_list():
     print(f"{Fore.YELLOW}\nChoose Target Mode:")
@@ -78,6 +97,8 @@ def execute_functions(selected_functions, target, target_dir, enable_bruteforce)
                 print(f"{Fore.RED}Invalid function number: {num}")
 
 if __name__ == "__main__":
+    if len(os.sys.argv) > 1 and os.sys.argv[1] == "--up":
+        check_for_updates()
     display_logo()
     setup()
     install_tools()
