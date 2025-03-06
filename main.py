@@ -1,4 +1,5 @@
 import os
+from Path import interactive_UI
 from logo import display_logo
 from setup.setup_dir import setup_directories
 from setup.remove_file import delete_empty_text_files
@@ -25,7 +26,7 @@ def get_target_list():
     if choice == "1":
         return [input(f"{Fore.YELLOW}Enter the target domain: ")]
     elif choice == "2":
-        file_path = input(f"{Fore.YELLOW}Enter the path to the target file: ")
+        file_path = interactive_UI()
         if not os.path.exists(file_path):
             print(f"{Fore.RED}Error: File not found.")
             exit(1)
