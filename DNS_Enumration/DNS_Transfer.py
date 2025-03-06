@@ -28,19 +28,29 @@ def get_ipv6(ns):
     except:
         return []
 
-def check_zone_transfer(ns, domain,target_dir):
+def check_zone_transfer(ns, domain, target_dir):
     """Try Zone Transfer on the given NS"""
     try:
         ns_ip = dns.resolver.resolve(ns, 'A')[0].to_text()
         print(f"{Fore.YELLOW}[*] Trying Zone Transfer on {ns} ({ns_ip})")
-        zone = dns.zone.from_xfr(dns.query.xfr(ns_ip, domain))
+        
+        # Timeout to prevent hanging
+        zone = dns.zone.from_xfr(dns.query.xfr(ns_ip, domain, timeout=5))
+        
         print(f"\n{Fore.GREEN}[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
-        with open(f'{target_dir}/LOGS.txt','a') as f:
-            f.write(f"\n{Fore.GREEN}[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
+        with open(f'{target_dir}/LOGS.txt', 'a') as f:
+            f.write(f"\n[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
         return [name.to_text() for name, _ in zone.nodes.items()]
-    except Exception:
-        print(f"{Fore.RED}[-] Zone Transfer failed on {ns} for {domain}")
-        return []
+    
+    except dns.exception.FormError:
+        print(f"{Fore.RED}[-] Zone Transfer not allowed on {ns} for {domain}")
+    except dns.exception.Timeout:
+        print(f"{Fore.RED}[-] Zone Transfer timed out on {ns} for {domain}")
+    except Exception as e:
+        print(f"{Fore.RED}[-] Error in Zone Transfer: {e}")
+    
+    return []
+
 
 def check_recursive_dns(ns):
     """Check if DNS server allows recursive queries"""
