@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from Path import interactive_UI
 from logo import display_logo

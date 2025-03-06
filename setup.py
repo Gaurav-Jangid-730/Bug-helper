@@ -1,35 +1,48 @@
-from setuptools import setup, find_packages
+#!/usr/bin/env python3
+
 import os
-import stat
+import shutil
+import subprocess
 
-TOOL_NAME = "bug-helper"
-MAIN_SCRIPT = "main.py"
+# Get the current script directory (tool's root directory)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+TOOL_NAME = os.path.basename(SCRIPT_DIR)  # Tool folder name
+DEST_PATH = os.path.join("/opt", TOOL_NAME)
+EXECUTABLE_NAME = "bug-helper"
+EXECUTABLE_PATH = os.path.join(DEST_PATH, EXECUTABLE_NAME + ".py")
+LINK_PATH = f"/usr/local/bin/{EXECUTABLE_NAME}"
+WRAPPER_SCRIPT = f"/usr/local/bin/{EXECUTABLE_NAME}"
 
-# Create an executable shell script for Unix-like systems
-executable_script = f"""#!/bin/bash
-python3 {os.path.abspath(MAIN_SCRIPT)} "$@"
+def copy_tool():
+    """Copy the tool folder to /opt/"""
+    if os.path.exists(DEST_PATH):
+        print(f"Removing existing tool folder in {DEST_PATH}...")
+        shutil.rmtree(DEST_PATH)
+
+    print(f"Copying {SCRIPT_DIR} to {DEST_PATH}...")
+    shutil.copytree(SCRIPT_DIR, DEST_PATH)
+    os.chmod(DEST_PATH, 0o755)
+
+def create_wrapper_script():
+    """Create a wrapper script to ensure Python executes bug-helper"""
+    wrapper_content = f"""#!/bin/bash
+python3 "{EXECUTABLE_PATH}" "$@"
 """
+    with open(WRAPPER_SCRIPT, "w") as f:
+        f.write(wrapper_content)
 
-# Write the shell script to /usr/local/bin or ~/.local/bin
-bin_path = f"/usr/local/bin/{TOOL_NAME}"
-try:
-    with open(bin_path, "w") as f:
-        f.write(executable_script)
-    os.chmod(bin_path, os.stat(bin_path).st_mode | stat.S_IEXEC)
-    print(f"Executable {TOOL_NAME} created at {bin_path}")
-except PermissionError:
-    print(f"Permission denied! Try running with sudo: sudo python3 setup.py install")
+    subprocess.run(["chmod", "+x", WRAPPER_SCRIPT], check=True)
 
-# Setup script
-setup(
-    name=TOOL_NAME,
-    version="1.0.0",
-    packages=find_packages(),
-    py_modules=["main"],  # Ensure main.py exists
-    install_requires=[],  # Add dependencies if needed
-    entry_points={
-        "console_scripts": [
-            f"{TOOL_NAME}=main:main",  # Ensure main.py has a main() function
-        ],
-    },
-)
+def main():
+    if not os.path.exists(SCRIPT_DIR):
+        print(f"Error: {SCRIPT_DIR} not found!")
+        return
+
+    copy_tool()
+    create_wrapper_script()
+    
+    print("\nSetup complete! You can now run your tool using:")
+    print(f"    {EXECUTABLE_NAME}")
+
+if __name__ == "__main__":
+    main()
