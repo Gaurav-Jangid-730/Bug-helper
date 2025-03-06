@@ -5,50 +5,21 @@ import re
 from logo import display_logo  # Import the logo function
 
 # Determine starting directory
-if sys.platform == "win32":
-    START_DIR = "C:\\"
-else:
-    START_DIR = os.path.expanduser("~")  # Home directory in Linux/macOS
+START_DIR = "C:\\" if sys.platform == "win32" else os.path.expanduser("~")  # Home directory in Linux/macOS
 
-# Use readline on Linux/macOS, prompt_toolkit on Windows
-if sys.platform == "win32":
-    from prompt_toolkit import prompt
-    from prompt_toolkit.completion import PathCompleter
-    def get_user_input():
-        """Get user input with path autocompletion (Windows)."""
-        completer = PathCompleter()
-        return prompt("📌 Enter path: ", completer=completer).strip()
-else:
-    import readline
-    def complete_path(text, state):
-        """Autocompletion for paths on Linux/macOS."""
-        directory, partial = os.path.split(text)
+# Import `prompt_toolkit` for path selection (Windows & Linux)
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import PathCompleter
+from prompt_toolkit.shortcuts import CompleteStyle
 
-        if not directory:
-            directory = "."  # Use current directory if nothing is typed
-
-        try:
-            entries = os.listdir(directory)
-        except FileNotFoundError:
-            return None
-
-        # Get only matching entries
-        matches = [entry for entry in entries if entry.startswith(partial)]
-
-        # If it's a directory, add a slash to indicate it's navigable
-        matches = [os.path.join(directory, match) + ("/" if os.path.isdir(os.path.join(directory, match)) else "") for match in matches]
-
-        return matches[state] if state < len(matches) else None
-
-    def setup_autocomplete():
-        """Setup the TAB autocompletion for paths (Linux/macOS)."""
-        readline.set_completer(complete_path)
-        readline.set_completer_delims(" ")  # Prevents autocomplete from stopping at spaces
-        readline.parse_and_bind("tab: complete")
-
-    def get_user_input():
-        """Get user input (Linux/macOS)."""
-        return input("📌 Enter path (TAB for suggestions): ").strip()
+def get_user_input():
+    """Get user input with path autocompletion (Windows & Linux)."""
+    completer = PathCompleter(only_directories=False)
+    return prompt(
+        "📌 Enter path: ",
+        completer=completer,
+        complete_style=CompleteStyle.MULTI_COLUMN  # Scrollable & visually appealing
+    ).strip()
 
 def list_directory(path):
     """Return list of files and folders in the given path, including '..' for going back."""
@@ -114,9 +85,6 @@ def interactive_path_selector(stdscr, base_path):
 
 def interactive_UI():
     """Main function for path selection."""
-    if sys.platform != "win32":
-        setup_autocomplete()
-
     while True:
         try:
             display_logo()  # Always display the logo on top
