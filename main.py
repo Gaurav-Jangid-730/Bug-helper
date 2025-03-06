@@ -15,7 +15,7 @@ from colorama import Fore, init
 init(autoreset=True)
 
 def check_for_updates():
-    repo_url = "https://github.com/your-username/Bug-helper.git"  # Replace with actual repo URL
+    repo_url = "https://github.com/Gaurav-Jangid-730/Bug-helper.gitt"  # Replace with actual repo URL
     repo_dir = os.path.dirname(os.path.abspath(__file__))
     
     if not os.path.exists(os.path.join(repo_dir, ".git")):
