@@ -32,15 +32,18 @@ else:
         except FileNotFoundError:
             return None
 
+        # Get only matching entries
         matches = [entry for entry in entries if entry.startswith(partial)]
 
-        if state < len(matches):
-            return os.path.join(directory, matches[state])
-        return None
+        # If it's a directory, add a slash to indicate it's navigable
+        matches = [os.path.join(directory, match) + ("/" if os.path.isdir(os.path.join(directory, match)) else "") for match in matches]
+
+        return matches[state] if state < len(matches) else None
 
     def setup_autocomplete():
         """Setup the TAB autocompletion for paths (Linux/macOS)."""
         readline.set_completer(complete_path)
+        readline.set_completer_delims(" ")  # Prevents autocomplete from stopping at spaces
         readline.parse_and_bind("tab: complete")
 
     def get_user_input():
