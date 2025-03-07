@@ -4,4 +4,5 @@ dnspython
 urllib3
 beautifulsoup4
 idna
-urllib
+prompt_toolkit
+tldextract
