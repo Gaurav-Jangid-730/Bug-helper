@@ -11,8 +11,6 @@ def setup_directories(target):
     down_dir = os.path.join(target_dir,"downloads")
     screen_dir = os.path.join(target_dir,"screenshorts")
     interest_dir = os.path.join(target_dir,"interest")
-    Dns_enum = os.path.join(target_dir,"DNS")
-    ns_dir = os.path.join(Dns_enum,"NS")
     if not os.path.exists(bug_dir):
         os.makedirs(bug_dir)
         print(f"{Fore.YELLOW}[INFO] Created 'bug' folder at: {bug_dir}")
@@ -24,8 +22,6 @@ def setup_directories(target):
         os.makedirs(down_dir)
         os.makedirs(screen_dir)
         os.makedirs(interest_dir)
-        os.makedirs(Dns_enum)
-        os.makedirs(ns_dir)
         with open(f'{target_dir}/LOGS.txt','+w') as f:
             f.write("[+] Here is the List of Potential Bug's")
             f.close()
