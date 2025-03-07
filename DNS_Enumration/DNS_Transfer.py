@@ -28,8 +28,11 @@ def get_ipv6(ns):
     except:
         return []
 
-def check_zone_transfer(ns, domain, target_dir):
+def check_zone_transfer(ns, domain, target_dir, checked_nameservers):
     """Try Zone Transfer on the given NS"""
+    if ns in checked_nameservers:
+        print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Zone Transfer.")
+        return []
     try:
         ns_ip = dns.resolver.resolve(ns, 'A')[0].to_text()
         print(f"{Fore.YELLOW}[*] Trying Zone Transfer on {ns} ({ns_ip})")
@@ -40,6 +43,7 @@ def check_zone_transfer(ns, domain, target_dir):
         print(f"\n{Fore.GREEN}[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
         with open(f'{target_dir}/LOGS.txt', 'a') as f:
             f.write(f"\n[✔] Zone Transfer SUCCESS: {domain} via {ns}\n")
+        checked_nameservers.add(ns)
         return [name.to_text() for name, _ in zone.nodes.items()]
     
     except dns.exception.FormError:
@@ -48,7 +52,7 @@ def check_zone_transfer(ns, domain, target_dir):
         print(f"{Fore.RED}[-] Zone Transfer timed out on {ns} for {domain}")
     except Exception as e:
         print(f"{Fore.RED}[-] Error in Zone Transfer: {e}")
-    
+    checked_nameservers.add(ns)
     return []
 
 
@@ -88,6 +92,8 @@ def DNS_transfer(target_dir):
     input_file = f'{target_dir}/resolved-final-subdomains.txt'
     with open(input_file, 'r') as f:
         subdomains = [line.strip() for line in f]
+
+    checked_nameservers = set()
     
     for domain in subdomains:
         root_domain = get_root_domain(domain)
@@ -105,7 +111,7 @@ def DNS_transfer(target_dir):
                 if ipv6:
                     print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
 
-                check_zone_transfer(ns, domain, target_dir)
+                check_zone_transfer(ns, domain, target_dir, checked_nameservers)
                 check_recursive_dns(ns)
                 check_cname_hijack(domain)
             except dns.resolver.LifetimeTimeout:
