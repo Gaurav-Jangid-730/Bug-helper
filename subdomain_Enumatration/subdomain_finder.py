@@ -11,7 +11,7 @@ def subdomain_finding(target, target_dir, enable_bruteforce):
     ]
     virustotal = False
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(script_dir, "subdomain_Enumatration", "virustotal_api.txt")
+    file_path = os.path.join(script_dir, "virustotal_api.txt")
     if os.path.exists(file_path):
         virustotal = True
         with open(file_path, "r") as file:
