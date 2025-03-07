@@ -10,7 +10,8 @@ def subdomain_finding(target, target_dir, enable_bruteforce):
         f"mv {target}.txt {target_dir}/findomain-{target}.txt",
     ]
     virustotal = False
-    file_path = "subdomain_Enumatration/virustotal_api.txt"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(script_dir, "subdomain_Enumatration", "virustotal_api.txt")
     if os.path.exists(file_path):
         virustotal = True
         with open(file_path, "r") as file:
