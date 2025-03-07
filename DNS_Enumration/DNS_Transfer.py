@@ -56,7 +56,7 @@ def check_zone_transfer(ns, domain, target_dir, checked_nameservers):
     return []
 
 
-def check_recursive_dns(ns):
+def check_recursive_dns(ns, checked_nameservers):
     """Check if DNS server allows recursive queries"""
     if ns in checked_nameservers:
         print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Zone Transfer.")
@@ -115,7 +115,7 @@ def DNS_transfer(target_dir):
                 if ipv6:
                     print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
                 check_zone_transfer(ns, domain, target_dir, checked_nameservers)
-                check_recursive_dns(ns)
+                check_recursive_dns(ns, checked_nameservers)
             except dns.resolver.LifetimeTimeout:
                 print(f"{Fore.RED}[-] DNS query timed out for {ns}, skipping...")
         delete_empty_text_files(target_dir)
