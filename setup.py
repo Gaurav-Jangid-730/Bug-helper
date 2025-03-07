@@ -18,7 +18,8 @@ commands = [
     "apt install unzip",
     "apt install golang-go",
     "export PATH=$PATH:$(go env GOPATH)/bin",
-    "apt install pipx"
+    "apt install pipx",
+    "sudo apt install python3-colorama python3-requests python3-dnspython python3-urllib3 python3-bs4 python3-idna python3-prompt-toolkit python3-tldextract"
 ]
 
 def copy_tool():
