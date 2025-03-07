@@ -3,7 +3,6 @@
 import os
 import shutil
 import subprocess
-from Runner.Runner import run_command
 
 # Get the current script directory (tool's root directory)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,6 +20,22 @@ commands = [
     "apt install pipx",
     "sudo apt install python3-colorama python3-requests python3-dnspython python3-urllib3 python3-bs4 python3-idna python3-prompt-toolkit python3-tldextract"
 ]
+
+def run_command2(commands):
+    for command in commands:
+        try:
+            process = subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            for line in process.stdout:
+                print(line, end="")
+            process.stdout.close()
+            return_code = process.wait()
+            if return_code != 0:
+                print(f"Command failed with error code: {return_code}")
+                for line in process.stderr:
+                    print(line, end="")
+        except Exception as e:
+            print(f"An error occurred while running: {command}")
+            print(f"{e}")
 
 def copy_tool():
     """Copy the tool folder to /opt/"""
@@ -49,7 +64,7 @@ def main():
 
     copy_tool()
     create_wrapper_script()
-    run_command(commands)
+    run_command2(commands)
     
     print("\nSetup complete! You can now run your tool using:")
     print(f"    {EXECUTABLE_NAME}")
