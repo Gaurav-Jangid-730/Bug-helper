@@ -5,7 +5,9 @@ from colorama import Fore, init
 
 init(autoreset=True)
 
-def is_tool_installed(tool, path_check=False, pipx_check=False):
+def is_tool_installed(tool, go_tool=False,path_check=False, pipx_check=False):
+    if go_tool:
+        return os.path.exists(os.path.expanduser(f"~/go/bin/{tool}"))
     if path_check:
         return os.path.exists(os.path.expanduser(f"~/tools/{tool}"))
     
@@ -47,10 +49,11 @@ def install_tools():
     all_installed = True
     
     for tool, commands in tools.items():
+        go_tool = any("go install" in cmd for cmd in commands)
         path_check = tool == "XSStrike"  # Check ~/tools for XSStrike
         pipx_check = tool in ["waymore", "uro"]  # Check pipx for these tools
 
-        if is_tool_installed(tool, path_check=path_check, pipx_check=pipx_check):
+        if is_tool_installed(tool, go_tool=go_tool, path_check=path_check, pipx_check=pipx_check):
             print(f"{Fore.GREEN}[OK] {tool} is already installed.")
         else:
             all_installed = False
