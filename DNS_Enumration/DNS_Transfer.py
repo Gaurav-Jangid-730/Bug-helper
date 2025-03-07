@@ -20,8 +20,11 @@ def get_nameservers(domain):
         print(f"{Fore.RED}[!] Failed to get NS for {domain}: {e}")
         return []
 
-def get_ipv6(ns):
+def get_ipv6(ns, checked_nameservers):
     """Resolve IPv6 for a nameserver"""
+    if ns in checked_nameservers:
+        print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Get IPv6.")
+        return []
     try:
         ipv6 = dns.resolver.resolve(ns, 'AAAA')
         return [str(ip) for ip in ipv6]
@@ -59,7 +62,7 @@ def check_zone_transfer(ns, domain, target_dir, checked_nameservers):
 def check_recursive_dns(ns, checked_nameservers):
     """Check if DNS server allows recursive queries"""
     if ns in checked_nameservers:
-        print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Zone Transfer.")
+        print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Recursive DNS.")
         return []
     try:
         query = dns.message.make_query('www.google.com', dns.rdatatype.A)
@@ -111,7 +114,7 @@ def DNS_transfer(target_dir):
 
         for ns in name_servers:
             try:
-                ipv6 = get_ipv6(ns)
+                ipv6 = get_ipv6(ns, checked_nameservers)
                 if ipv6:
                     print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
                 check_zone_transfer(ns, domain, target_dir, checked_nameservers)
