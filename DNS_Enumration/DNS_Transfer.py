@@ -2,7 +2,7 @@ import dns.resolver
 import dns.query
 import dns.zone
 import tldextract
-from setup.remove_file import delete_empty_text_files
+from Start_up.remove_file import delete_empty_text_files
 from colorama import Fore, init
 
 init(autoreset=True)

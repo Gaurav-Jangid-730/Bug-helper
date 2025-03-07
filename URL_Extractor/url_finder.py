@@ -2,7 +2,7 @@ import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from Runner.Runner import run_section
-from setup.Ip_placer import ip_placer
+from Start_up.Ip_placer import ip_placer
 
 def Url_finding(target, target_dir):
     subdomain_file = f"{target_dir}/resolved_final_subdomains.txt"
