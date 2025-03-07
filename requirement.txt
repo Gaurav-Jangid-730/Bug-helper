@@ -1,12 +1,7 @@
-subprocess
-os
-argparse
-concurren
 colorama
-golang-go
 requests
 dnspython
 urllib3
-bs4
+beautifulsoup4
 idna
 urllib

@@ -15,15 +15,11 @@ def install_tools():
         "sublist3r": ["apt install sublist3r"],
         "assetfinder": ["go install github.com/tomnomnom/assetfinder@latest"],
         "subfinder": ["apt install subfinder"],
-        "findomain": ["git clone https://github.com/Findomain/Findomain.git && cd Findomain && ./builder.sh"],
-        "dnsx": ["GO111MODULE=on go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest"],
+        "findomain": ["apt install findomain"],
+        "dnsx": ["apt install dnsx"],
         "dnsrecon": ["pip install dnsrecon"],
         "cpulimit": ["sudo apt install cpulimit -y"],
-        "katana": [
-            "wget https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip",
-            "unzip katana_1.1.0_linux_amd64.zip",
-            "mv katana /usr/local/bin"
-        ],
+        "katana": ["wget https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip && unzip katana_1.1.0_linux_amd64.zip && mv katana /usr/local/bin && rm katana_1.1.0_linux_amd64.zip"],
         "waybackurls": ["go install github.com/tomnomnom/waybackurls@latest"],
         "waymore": ["pipx install git+https://github.com/xnl-h4ck3r/waymore.git"],
         "hakrawler": ["go install github.com/hakluke/hakrawler@latest"],

@@ -3,6 +3,7 @@
 import os
 import shutil
 import subprocess
+from Runner.Runner import run_command
 
 # Get the current script directory (tool's root directory)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,6 +13,13 @@ EXECUTABLE_NAME = "bug-helper"
 EXECUTABLE_PATH = os.path.join(DEST_PATH, EXECUTABLE_NAME + ".py")
 LINK_PATH = f"/usr/local/bin/{EXECUTABLE_NAME}"
 WRAPPER_SCRIPT = f"/usr/local/bin/{EXECUTABLE_NAME}"
+
+commands = [
+    "apt install unzip",
+    "apt install golang-go",
+    "export PATH=$PATH:$(go env GOPATH)/bin",
+    "apt install pipx"
+]
 
 def copy_tool():
     """Copy the tool folder to /opt/"""
@@ -40,6 +48,7 @@ def main():
 
     copy_tool()
     create_wrapper_script()
+    run_command(commands)
     
     print("\nSetup complete! You can now run your tool using:")
     print(f"    {EXECUTABLE_NAME}")
