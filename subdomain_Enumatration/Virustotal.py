@@ -2,7 +2,7 @@ import requests
 
 def get_subdomains(target_dir,domain, api_key):
     filename = f"{target_dir}/{domain}_subdomains.txt"
-    BASE_URL = f"https://www.virustotal.com/api/v3/domains/{DOMAIN}/subdomains?limit=40"
+    BASE_URL = f"https://www.virustotal.com/api/v3/domains/{domain}/subdomains?limit=40"
     headers = {
         "accept": "application/json",
         "x-apikey": api_key
