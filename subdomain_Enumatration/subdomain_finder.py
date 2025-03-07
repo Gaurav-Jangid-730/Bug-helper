@@ -1,5 +1,5 @@
 from Runner.Runner import run_section
-from Virustotal import get_subdomains
+from subdomain_Enumatration.Virustotal import get_subdomains
 import os
 def subdomain_finding(target, target_dir, enable_bruteforce):
     commands = [
