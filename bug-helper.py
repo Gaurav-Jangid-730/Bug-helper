@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import subprocess
 from Path import interactive_UI
 from logo import display_logo
 from Start_up.setup_dir import setup_directories
