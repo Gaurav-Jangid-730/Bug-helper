@@ -58,6 +58,9 @@ def check_zone_transfer(ns, domain, target_dir, checked_nameservers):
 
 def check_recursive_dns(ns):
     """Check if DNS server allows recursive queries"""
+    if ns in checked_nameservers:
+        print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Zone Transfer.")
+        return []
     try:
         query = dns.message.make_query('www.google.com', dns.rdatatype.A)
         response = dns.query.udp(query, ns, timeout=2)
@@ -101,6 +104,7 @@ def DNS_transfer(target_dir):
         
         try:
             name_servers = get_nameservers(root_domain)
+            check_cname_hijack(domain)
         except dns.resolver.LifetimeTimeout:
             print(f"{Fore.RED}[-] NS lookup timed out for {root_domain}")
             continue  # Skip this domain and move to the next one
@@ -110,10 +114,8 @@ def DNS_transfer(target_dir):
                 ipv6 = get_ipv6(ns)
                 if ipv6:
                     print(f"{Fore.YELLOW}[*] IPv6 Found for {ns}: {ipv6}")
-
                 check_zone_transfer(ns, domain, target_dir, checked_nameservers)
                 check_recursive_dns(ns)
-                check_cname_hijack(domain)
             except dns.resolver.LifetimeTimeout:
                 print(f"{Fore.RED}[-] DNS query timed out for {ns}, skipping...")
         delete_empty_text_files(target_dir)
