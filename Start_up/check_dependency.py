@@ -19,12 +19,12 @@ def is_tool_installed(tool, go_tool=False,path_check=False, pipx_check=False):
 
 def install_tools():
     tools = {
-        "sublist3r": ["apt install sublist3r"],
+        "sublist3r": ["apt install sublist3r -y"],
         "assetfinder": ["go install github.com/tomnomnom/assetfinder@latest"],
-        "subfinder": ["apt install subfinder"],
-        "findomain": ["apt install findomain"],
-        "dnsx": ["apt install dnsx"],
-        "dnsrecon": ["apt install dnsrecon"],
+        "subfinder": ["apt install subfinder -y"],
+        "findomain": ["apt install findomain -y"],
+        "dnsx": ["apt install dnsx -y"],
+        "dnsrecon": ["apt install dnsrecon -y"],
         "cpulimit": ["sudo apt install cpulimit -y"],
         "katana": ["wget https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip && unzip katana_1.1.0_linux_amd64.zip && mv katana /usr/local/bin && rm katana_1.1.0_linux_amd64.zip"],
         "waybackurls": ["go install github.com/tomnomnom/waybackurls@latest"],
