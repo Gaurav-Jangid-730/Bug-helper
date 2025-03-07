@@ -1,7 +1,7 @@
 import requests
 import threading
 import concurrent.futures
-from setup.remove_file import delete_empty_text_files
+from Start_up.remove_file import delete_empty_text_files
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 from colorama import Fore, Style, init
 

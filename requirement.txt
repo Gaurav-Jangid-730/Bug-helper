@@ -9,5 +9,4 @@ dnspython
 urllib3
 bs4
 idna
-dnspython
 urllib
