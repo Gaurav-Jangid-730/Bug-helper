@@ -5,9 +5,14 @@ from colorama import Fore, init
 
 init(autoreset=True)
 
-def is_tool_installed(tool, path_check=False):
+def is_tool_installed(tool, path_check=False, pipx_check=False):
     if path_check:
         return os.path.exists(os.path.expanduser(f"~/tools/{tool}"))
+    
+    if pipx_check:
+        result = subprocess.run(f"pipx list | grep {tool}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return tool in result.stdout  # Check if tool name appears in pipx list output
+
     return subprocess.call(f"which {tool}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
 
 def install_tools():
@@ -36,14 +41,16 @@ def install_tools():
         "qsreplace": ["go install github.com/tomnomnom/qsreplace@latest"],
         "airixss": ["go install github.com/ferreiraklet/airixss@latest"],
         "kxss": ["go install github.com/tomnomnom/hacks/kxss@latest"],
-        "XSStrike": ["mkdir ~/tools && cd ~/tools && git clone https://github.com/s0md3v/XSStrike.git"],
+        "XSStrike": ["mkdir -p ~/tools && cd ~/tools && git clone https://github.com/s0md3v/XSStrike.git"],
     }
     
     all_installed = True
     
     for tool, commands in tools.items():
-        path_check = tool == "XSStrike"  # Check XSStrike inside ~/tools instead of using 'which'
-        if is_tool_installed(tool, path_check=path_check):
+        path_check = tool == "XSStrike"  # Check ~/tools for XSStrike
+        pipx_check = tool in ["waymore", "uro"]  # Check pipx for these tools
+
+        if is_tool_installed(tool, path_check=path_check, pipx_check=pipx_check):
             print(f"{Fore.GREEN}[OK] {tool} is already installed.")
         else:
             all_installed = False
