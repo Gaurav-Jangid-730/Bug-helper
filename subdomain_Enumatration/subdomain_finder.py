@@ -17,7 +17,7 @@ def subdomain_finding(target, target_dir, enable_bruteforce):
         with open(file_path, "r") as file:
             api_key = file.read().strip()
         print("[+] Finding Subdomains Using VirusTotal.")
-        get_subdomains(target, api_key)
+        get_subdomains(target_dir,target, api_key)
     else:
         print("[-] VirusTotal Is Not Integrated.")
 
