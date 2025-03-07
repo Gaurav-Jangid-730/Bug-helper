@@ -58,11 +58,21 @@ python3 "{EXECUTABLE_PATH}" "$@"
 
     subprocess.run(["chmod", "+x", WRAPPER_SCRIPT], check=True)
 
+def Add_VirusTotal():
+    api_key = input("Enter VirusTotal API Key (If you have one, otherwise press Enter): ")
+    
+    if api_key:  # This checks if api_key is not an empty string
+        with open("subdomain_Enumatration/virustotal_api.txt", "w") as f:
+            f.write(api_key)
+        print("[+] API key saved successfully.")
+    else:
+        print("[+] You can add an API key anytime.")
+
 def main():
     if not os.path.exists(SCRIPT_DIR):
         print(f"Error: {SCRIPT_DIR} not found!")
         return
-
+    Add_VirusTotal()
     copy_tool()
     create_wrapper_script()
     run_command2(commands)
