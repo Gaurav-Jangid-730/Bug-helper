@@ -35,7 +35,7 @@ def check_email_spoofing(target_dir,domain):
 
 def check_open_resolver(target_dir, nameservers, checked_nameservers):
     print("\n🌍 Checking Open Resolver...")
-    if ns in checked_nameservers:
+    if nameservers in checked_nameservers:
         print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Recursive DNS.")
         return []
     for ns in nameservers:
