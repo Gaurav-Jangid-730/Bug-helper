@@ -33,20 +33,19 @@ def check_email_spoofing(target_dir,domain):
     if not dmarc:
         print(f"{Fore.RED}[!] No DMARC record found for {domain}")
 
-def check_open_resolver(target_dir, nameservers, checked_nameservers):
+def check_open_resolver(ns, target_dir, checked_nameservers):
     print("\n🌍 Checking Open Resolver...")
-    if nameservers in checked_nameservers:
+    if ns in checked_nameservers:
         print(f"{Fore.CYAN}[*] Skipping {ns}, already attempted Recursive DNS.")
         return []
-    for ns in nameservers:
-        try:
-            response = dns.resolver.resolve("google.com", "A", nameserver=ns)
-            if response:
-                log = f"{Fore.GREEN}[!] Open Resolver Found on {ns}"
-                print(log)
-                log_vulnerability(target_dir,log)
-        except:
-            print(f"{Fore.RED}[-] Not an Open Resolver: {ns}")
+    try:
+        response = dns.resolver.resolve("google.com", "A", nameserver=ns)
+        if response:
+            log = f"{Fore.GREEN}[!] Open Resolver Found on {ns}"
+            print(log)
+            log_vulnerability(target_dir,log)
+    except:
+        print(f"{Fore.RED}[-] Not an Open Resolver: {ns}")
 
 def find_real_ip(target_dir,domain):
     print("\n🛜 Finding Real IP (Cloudflare Bypass)...")
@@ -180,10 +179,9 @@ def DNS_transfer(target_dir):
                     log = f"{Fore.GREEN}[*] IPv6 Found for {ns}: {ipv6}"
                     print(log)
                     ipv_46(target_dir,log)
-                
-                check_zone_transfer(ns, domain, target_dir, checked_nameservers)
                 check_recursive_dns(ns, checked_nameservers)
-                check_open_resolver(target_dir,ns,checked_nameservers)
+                check_open_resolver(ns, target_dir, checked_nameservers)
+                check_zone_transfer(ns, domain, target_dir, checked_nameservers)
             except dns.resolver.LifetimeTimeout:
                 print(f"{Fore.RED}[-] DNS query timed out for {ns}, skipping...")
     delete_empty_text_files(target_dir)
