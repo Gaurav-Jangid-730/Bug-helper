@@ -81,7 +81,7 @@ def check_expired_domain(target_dir,domain):
         print("[-] WHOIS lookup failed")
 
 def get_nameservers(target_dir,domain):
-    print("\n🛠 Checking NS Records...")
+    print("\n🛠  Checking NS Records...")
     ns_records = get_dns_records(domain, "NS")
     if ns_records:
         print(f"{Fore.BLUE}[!] Nameservers Found: {ns_records}")
@@ -91,10 +91,6 @@ def get_nameservers(target_dir,domain):
         print(log)
         log_vulnerability(target_dir,log)
         return []
-
-def get_root_domain(domain):
-    ext = tldextract.extract(domain)
-    return f"{ext.domain}.{ext.suffix}"
 
 def get_ipv6(ns, checked_nameservers):
     """Resolve IPv6 for a nameserver"""
@@ -158,8 +154,7 @@ def DNS_transfer(target_dir):
     checked_nameservers = set()
     
     for domain in subdomains:
-        root_domain = get_root_domain(domain)
-        print(f"\n{Fore.YELLOW}[*] Scanning {root_domain}")
+        print(f"\n{Fore.YELLOW}[*] Scanning {domain}")
         
         try:
             name_servers = get_nameservers(target_dir,root_domain)

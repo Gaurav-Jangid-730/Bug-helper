@@ -1,5 +1,4 @@
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
 from colorama import Fore, init
 
 init(autoreset=True)
