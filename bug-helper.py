@@ -83,7 +83,7 @@ def execute_functions(selected_functions, target, target_dir, enable_bruteforce)
         3: lambda: subdomain_takeover(target_dir, f'{target_dir}/resolved-final-subdomains.txt'),
         4: lambda: Url_finding(target, target_dir),
         5: lambda: open_redirect(target_dir, target),
-        6: lambda: xss_scanning(target_dir)
+        # 6: lambda: xss_scanning(target_dir)
     }
     
     if 0 in selected_functions:
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     print("3 - Performing Subdomain Takeover")
     print("4 - URL Extraction")
     print("5 - Open Redirection Bug")
-    print("6 - XSS Scanning")
+    # print("6 - XSS Scanning")
     
     selected_input = input(f"{Fore.YELLOW}Enter function numbers (e.g., 1-2 3 6): ")
     os.system('cls' if os.name == 'nt' else 'clear')

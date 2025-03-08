@@ -1,5 +1,4 @@
 import os
-import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from Runner.Runner import run_section
 from Start_up.Ip_placer import ip_placer
