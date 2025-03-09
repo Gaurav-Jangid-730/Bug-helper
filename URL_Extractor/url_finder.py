@@ -8,7 +8,7 @@ def Url_finding(target, target_dir):
     output_file = f"{target_dir}/URL_FOR_{target}.txt"
 
     commands = [
-        f'waymore -i {target} -oU {target_dir}/waymore_results.txt',
+        f'waymore -i {target} -mode U -p 5 -v -oU {target_dir}/waymore_results.txt',
         f'cat {subdomain_file} | gau --subs > {target_dir}/gau_results.txt',
         f'echo {target} | katana -ps -pss waybackarchive,commoncrawl,alienvault -f qurl >> {target_dir}/waymore_results.txt',
         f'cat {subdomain_file} | waybackurls > {target_dir}/waybackurls.txt',
