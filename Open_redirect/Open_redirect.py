@@ -1,5 +1,6 @@
 import requests
 import threading
+import os
 import concurrent.futures
 from Start_up.remove_file import delete_empty_text_files
 from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
@@ -77,7 +78,9 @@ def test_redirects(redirect_urls, bug_path):
     headers = {"User-Agent": "Mozilla/5.0"}
 
     try:
-        with open('Open_redirect/payloads.txt', 'r') as f:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "payloads.txt")
+        with open(file_path, 'r') as f:
             payloads = [line.strip() for line in f if line.strip()]
     except FileNotFoundError:
         print(f"{Fore.RED}[-] Payload file not found!{Style.RESET_ALL}")
