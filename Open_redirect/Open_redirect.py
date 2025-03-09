@@ -7,6 +7,8 @@ from colorama import Fore, Style, init
 
 init(autoreset=True)
 
+TIMEOUT = 5  # Timeout in seconds
+
 # Common redirect parameters
 redirect_params = [
     "redirect", "url", "next", "return", "r", "u", "goto", "target",
@@ -49,21 +51,26 @@ def test_redirect(bug_path ,url, payload):
         # Test query-based injection
             for param in query_params:
                 if param in redirect_params:
-                    injected_url = url.replace(query_params[param][0], urllib.parse.quote_plus(payload))
-                    response = requests.get(injected_url, allow_redirects=False)
-                    print(f"\n{Fore.GREEN}[QUERY] {injected_url} -> {response.status_code}\n")
-                    f.write(f"\n{Fore.GREEN}[QUERY] {injected_url} -> {response.status_code}\n")
+                    try:
+                        response = requests.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
+                        print(f"\n{Fore.GREEN}[QUERY] {injected_url} -> {response.status_code}")
+                        f.write(f"\n{Fore.GREEN}[QUERY] {injected_url} -> {response.status_code}")
+                    except requests.exceptions.RequestException as req_err:
+                        print(f"\n{Fore.RED}[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}")
 
         # Test path-based injection
             for path in redirect_paths:
                 if path in url:
                     injected_url = url.rstrip("/") + "/" + urllib.parse.quote_plus(payload)
-                    response = requests.get(injected_url, allow_redirects=False)
-                    print(f"\n{Fore.GREEN}[PATH] {injected_url} -> {response.status_code}\n")
-                    f.write(f"\n{Fore.GREEN}[PATH] {injected_url} -> {response.status_code}\n")
+                    try:
+                        response = requests.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
+                        print(f"\n{Fore.GREEN}[PATH] {injected_url} -> {response.status_code}")
+                        f.write(f"\n{Fore.GREEN}[PATH] {injected_url} -> {response.status_code}")
+                    except requests.exceptions.RequestException as req_err:
+                        print(f"\n{Fore.RED}[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}")
 
     except Exception as e:
-        print(f"{Fore.RED}[ERROR] {url}: {str(e)}")
+        print(f"\n{Fore.RED}[ERROR] {url}: {str(e)}")
 
 # Function to start scanning with threading
 def scan_urls(bug_path, urls, payloads):
