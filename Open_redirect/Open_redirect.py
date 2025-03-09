@@ -12,6 +12,7 @@ init(autoreset=True)
 TIMEOUT = 10  
 MAX_WORKERS = 10
 MAX_PAYLOADS = 10  
+MAX_URLS = 10
 
 # Common redirect parameters
 redirect_params = {
@@ -103,11 +104,13 @@ def scan_urls(bug_path, urls, payloads):
     log_thread.start()
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        for url in urls:
-            for i in range(0, len(payloads), MAX_PAYLOADS):  # Process all payloads in batches of MAX_PAYLOADS
-                batch = payloads[i : i + MAX_PAYLOADS]
-                for payload in batch:
-                    executor.submit(test_redirect, url, payload)
+        for x in range(0,len(url), MAX_URLS):
+            url_batch = urls[x : x + MAX_URLS]
+            for url in url_batch:
+                for i in range(0, len(payloads), MAX_PAYLOADS):  # Process all payloads in batches of MAX_PAYLOADS
+                    batch = payloads[i : i + MAX_PAYLOADS]
+                    for payload in batch:
+                        executor.submit(test_redirect, url, payload)
 
     log_queue.put(None)  # Signal log writer to stop
     log_thread.join()  # Wait for log writing to finish
