@@ -20,7 +20,7 @@ def is_tool_installed(tool, go_tool=False,path_check=False, pipx_check=False):
 def install_tools():
     tools = {
         "sublist3r": ["apt install sublist3r -y"],
-        "assetfinder": ["go install github.com/tomnomnom/assetfinder@latest"],
+        "assetfinder": ["apt install assetfinder"],
         "subfinder": ["apt install subfinder -y"],
         "findomain": ["apt install findomain -y"],
         "dnsx": ["apt install dnsx -y"],
@@ -28,7 +28,7 @@ def install_tools():
         "cpulimit": ["sudo apt install cpulimit -y"],
         "katana": ["wget https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip && unzip katana_1.1.0_linux_amd64.zip && mv katana /usr/local/bin && rm katana_1.1.0_linux_amd64.zip"],
         "waybackurls": ["go install github.com/tomnomnom/waybackurls@latest"],
-        "waymore": ["pipx install git+https://github.com/xnl-h4ck3r/waymore.git"],
+        "waymore": ["apt install waymore"],
         "hakrawler": ["go install github.com/hakluke/hakrawler@latest"],
         "uro": ["pipx install uro"],
         "gf": [
