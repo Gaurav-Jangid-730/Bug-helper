@@ -1,34 +1,50 @@
 import requests
-import threading
 import os
 import urllib.parse
+import threading
+from queue import Queue
+from concurrent.futures import ThreadPoolExecutor
 from Start_up.remove_file import delete_empty_text_files
 from colorama import Fore, Style, init
-from concurrent.futures import ThreadPoolExecutor
 
 init(autoreset=True)
 
-TIMEOUT = 50  # Timeout in seconds
+TIMEOUT = 10  # Reduced timeout to avoid hanging requests
+MAX_WORKERS = 10  # Limit thread usage to avoid high CPU/memory consumption
+MAX_URLS = 100  # Limit the number of URLs to process
+MAX_PAYLOADS = 10  # Limit payloads per URL to prevent excessive testing
 
 # Common redirect parameters
-redirect_params = [
+redirect_params = {
     "redirect", "url", "next", "return", "r", "u", "goto", "target",
     "forward", "continue", "checkout_url", "dest", "destination", "go",
     "image_url", "redir", "redirect_uri", "redirect_url", "return_path",
     "return_to", "returnTo", "rurl", "view"
-]
+}
 
 # Common redirect paths
-redirect_paths = [
+redirect_paths = {
     "/redirect/", "/go/", "/continue/", "/checkout/", "/out/", "/exit/",
     "/track/", "/trackback/", "/leave/", "/away/", "/visit/", "/r/",
     "/", "/cgi-bin/redirect.cgi?", "/out?", "/login?to="
-]
+}
+
+# Logging queue to avoid excessive memory usage
+log_queue = Queue()
+
+# Function to write logs asynchronously
+def log_writer(log_file_path):
+    with open(log_file_path, 'a') as log_file:
+        while True:
+            message = log_queue.get()
+            if message is None:
+                break  # Exit logging thread
+            log_file.write(message + "\n")
 
 # Function to filter URLs containing redirection parameters or paths
 def filter_urls(urls):
     filtered = []
-    for url in urls:
+    for url in urls[:MAX_URLS]:  # Limit processing to MAX_URLS
         parsed_url = urllib.parse.urlparse(url)
         
         # Check if query parameters match known redirect parameters
@@ -44,7 +60,7 @@ def filter_urls(urls):
     return filtered
 
 # Function to test URL with a given payload
-def test_redirect(url, payload, log_file):
+def test_redirect(url, payload):
     try:
         parsed_url = urllib.parse.urlparse(url)
         query_params = urllib.parse.parse_qs(parsed_url.query)
@@ -52,42 +68,50 @@ def test_redirect(url, payload, log_file):
         # Test query-based injection
         for param in query_params:
             if param in redirect_params:
-                injected_url = url + f"&{param}={urllib.parse.quote_plus(payload)}"
+                injected_url = f"{url}&{param}={urllib.parse.quote_plus(payload)}"
                 try:
                     response = requests.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
-                    log_message = f"\n[QUERY] {injected_url} -> {response.status_code}\n"
-                    print(Fore.GREEN + log_message.strip())
-                    log_file.write(Fore.GREEN + log_message)
-                except requests.exceptions.RequestException as req_err:
-                    error_message = f"\n[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}\n"
-                    print(Fore.RED + error_message.strip())
-                    log_file.write(Fore.RED + error_message)
+                    log_message = f"[QUERY] {injected_url} -> {response.status_code}"
+                    print(Fore.GREEN + log_message)
+                    log_queue.put(log_message)
+                except requests.RequestException as req_err:
+                    error_message = f"[ERROR] {injected_url}: {str(req_err)}"
+                    print(Fore.RED + error_message)
+                    log_queue.put(error_message)
 
         # Test path-based injection
         for path in redirect_paths:
             if path in url:
-                injected_url = url.rstrip("/") + "/" + urllib.parse.quote_plus(payload)
+                injected_url = f"{url.rstrip('/')}/{urllib.parse.quote_plus(payload)}"
                 try:
                     response = requests.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
-                    log_message = f"\n[PATH] {injected_url} -> {response.status_code}\n"
-                    print(Fore.GREEN + log_message.strip())
-                    log_file.write(Fore.GREEN + log_message)
-                except requests.exceptions.RequestException as req_err:
-                    error_message = f"\n[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}\n"
-                    print(Fore.RED + error_message.strip())
-                    log_file.write(Fore.RED + error_message)
+                    log_message = f"[PATH] {injected_url} -> {response.status_code}"
+                    print(Fore.GREEN + log_message)
+                    log_queue.put(log_message)
+                except requests.RequestException as req_err:
+                    error_message = f"[ERROR] {injected_url}: {str(req_err)}"
+                    print(Fore.RED + error_message)
+                    log_queue.put(error_message)
     except Exception as e:
-        print(f"\n{Fore.RED}[ERROR] {url}: {str(e)}\n")
+        error_message = f"[ERROR] {url}: {str(e)}"
+        print(Fore.RED + error_message)
+        log_queue.put(error_message)
 
-# Function to start scanning with threading using ThreadPoolExecutor
+# Function to start scanning using a thread pool
 def scan_urls(bug_path, urls, payloads):
     log_file_path = f'{bug_path}/LOGS.txt'
-    with open(log_file_path, 'a') as log_file:
-        with ThreadPoolExecutor() as executor:
-            # Create tasks for each URL and payload combination
-            for url in urls:
-                for payload in payloads:
-                    executor.submit(test_redirect, url, payload, log_file)
+    
+    # Start log writing in a separate thread
+    log_thread = threading.Thread(target=log_writer, args=(log_file_path,))
+    log_thread.start()
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        for url in urls:
+            for payload in payloads[:MAX_PAYLOADS]:  # Limit payloads per URL
+                executor.submit(test_redirect, url, payload)
+
+    log_queue.put(None)  # Signal log writer to stop
+    log_thread.join()  # Wait for log writing to finish
 
 # Main function
 def open_redirect(bug_path, target):
