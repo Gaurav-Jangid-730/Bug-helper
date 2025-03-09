@@ -104,7 +104,7 @@ def scan_urls(bug_path, urls, payloads):
     log_thread.start()
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        for x in range(0,len(url), MAX_URLS):
+        for x in range(0,len(urls), MAX_URLS):
             url_batch = urls[x : x + MAX_URLS]
             for url in url_batch:
                 for i in range(0, len(payloads), MAX_PAYLOADS):  # Process all payloads in batches of MAX_PAYLOADS
