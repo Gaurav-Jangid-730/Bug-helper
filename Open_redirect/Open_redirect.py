@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 init(autoreset=True)
 
-TIMEOUT = 5  # Timeout in seconds
+TIMEOUT = 50  # Timeout in seconds
 
 # Common redirect parameters
 redirect_params = [
@@ -44,7 +44,7 @@ def filter_urls(urls):
     return filtered
 
 # Function to test URL with a given payload
-def test_redirect(bug_path ,url, payload, log_file):
+def test_redirect(url, payload, log_file):
     try:
         parsed_url = urllib.parse.urlparse(url)
         query_params = urllib.parse.parse_qs(parsed_url.query)
@@ -87,7 +87,7 @@ def scan_urls(bug_path, urls, payloads):
             # Create tasks for each URL and payload combination
             for url in urls:
                 for payload in payloads:
-                    executor.submit(test_redirect, bug_path, url, payload, log_file)
+                    executor.submit(test_redirect, url, payload, log_file)
 
 # Main function
 def open_redirect(bug_path, target):
