@@ -157,7 +157,7 @@ def DNS_transfer(target_dir):
         print(f"\n{Fore.YELLOW}[*] Scanning {domain}")
         
         try:
-            name_servers = get_nameservers(target_dir,root_domain)
+            name_servers = get_nameservers(target_dir,domain)
             find_real_ip(target_dir,domain)
             check_internal_ip_leak(target_dir,domain)
             check_email_spoofing(target_dir,domain)
