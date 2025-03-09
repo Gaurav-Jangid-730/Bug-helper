@@ -29,6 +29,7 @@ def install_tools():
         "katana": ["wget https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip && unzip katana_1.1.0_linux_amd64.zip && mv katana /usr/local/bin && rm katana_1.1.0_linux_amd64.zip"],
         "waybackurls": ["go install github.com/tomnomnom/waybackurls@latest"],
         "waymore": ["pipx install waymore"],
+        "gau": ["go install github.com/lc/gau/v2/cmd/gau@latest"],
         "hakrawler": ["go install github.com/hakluke/hakrawler@latest"],
         "uro": ["pipx install uro"],
         "gf": [
