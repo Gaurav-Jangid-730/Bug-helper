@@ -28,7 +28,7 @@ def install_tools():
         "cpulimit": ["sudo apt install cpulimit -y"],
         "katana": ["wget https://github.com/projectdiscovery/katana/releases/download/v1.1.0/katana_1.1.0_linux_amd64.zip && unzip katana_1.1.0_linux_amd64.zip && mv katana /usr/local/bin && rm katana_1.1.0_linux_amd64.zip"],
         "waybackurls": ["go install github.com/tomnomnom/waybackurls@latest"],
-        "waymore": ["apt install waymore"],
+        "waymore": ["pipx install waymore"],
         "hakrawler": ["go install github.com/hakluke/hakrawler@latest"],
         "uro": ["pipx install uro"],
         "gf": [
