@@ -6,11 +6,11 @@ from queue import Queue, Empty
 from concurrent.futures import ThreadPoolExecutor
 from Start_up.remove_file import delete_empty_text_files
 from colorama import Fore, Style, init
+import multiprocessing
 
 init(autoreset=True)
 
-TIMEOUT = 5  # Reduce timeout to free resources faster
-MAX_WORKERS = 5  # Reduce worker threads to prevent memory exhaustion
+MAX_WORKERS = min(10, multiprocessing.cpu_count() * 2)  # Reduce worker threads to prevent memory exhaustion
 MAX_PAYLOADS = 5  # Reduce the number of payloads tested per URL batch
 MAX_URLS = 5  # Reduce the number of URLs processed at once
 
@@ -34,7 +34,7 @@ session = requests.Session()
 
 def log_writer(log_file_path):
     """ Writes logs asynchronously to avoid memory buildup. """
-    with open(log_file_path, 'a') as log_file:
+    with open(log_file_path, 'a',buffering=1) as log_file:
         while True:
             try:
                 message = log_queue.get(timeout=2)
@@ -65,7 +65,7 @@ def test_redirect(url, payload):
             if param in redirect_params:
                 injected_url = f"{url}&{param}={urllib.parse.quote_plus(payload)}"
                 try:
-                    response = session.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
+                    response = session.get(injected_url, allow_redirects=False, timeout=(5, 10))
                     if response.status_code in [301, 302, 303, 307, 308] and 'Location' in response.headers:
                         log_queue.put(f"{Fore.GREEN}[QUERY] {injected_url} -> {response.status_code} Redirects to: {response.headers['Location']}")
                     else:
@@ -78,7 +78,7 @@ def test_redirect(url, payload):
             if path in url:
                 injected_url = f"{url.rstrip('/')}/{urllib.parse.quote_plus(payload)}"
                 try:
-                    response = session.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
+                    response = session.get(injected_url, allow_redirects=False, timeout=(5, 10))
                     if response.status_code in [301, 302, 303, 307, 308] and 'Location' in response.headers:
                         log_queue.put(f"{Fore.GREEN}[PATH] {injected_url} -> {response.status_code} Redirects to: {response.headers['Location']}")
                     else:
