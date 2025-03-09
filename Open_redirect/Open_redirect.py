@@ -10,8 +10,7 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 TIMEOUT = 10  
-MAX_WORKERS = 10  
-MAX_URLS = 100  
+MAX_WORKERS = 10
 MAX_PAYLOADS = 10  
 
 # Common redirect parameters
@@ -47,7 +46,7 @@ def log_writer(log_file_path):
 # Function to filter URLs containing redirection parameters or paths
 def filter_urls(urls):
     filtered = []
-    for url in urls[:MAX_URLS]:  
+    for url in urls:  
         parsed_url = urllib.parse.urlparse(url)
         query_params = urllib.parse.parse_qs(parsed_url.query)
         
@@ -105,11 +104,13 @@ def scan_urls(bug_path, urls, payloads):
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for url in urls:
-            for payload in payloads[:MAX_PAYLOADS]:  
-                executor.submit(test_redirect, url, payload)
+            for i in range(0, len(payloads), MAX_PAYLOADS):  # Process all payloads in batches of MAX_PAYLOADS
+                batch = payloads[i : i + MAX_PAYLOADS]
+                for payload in batch:
+                    executor.submit(test_redirect, url, payload)
 
-    log_queue.put(None)  
-    log_thread.join()  
+    log_queue.put(None)  # Signal log writer to stop
+    log_thread.join()  # Wait for log writing to finish
 
 # Main function
 def open_redirect(bug_path, target):
