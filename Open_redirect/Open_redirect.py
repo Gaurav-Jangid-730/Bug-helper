@@ -55,11 +55,11 @@ def test_redirect(url, payload, log_file):
                 injected_url = url + f"&{param}={urllib.parse.quote_plus(payload)}"
                 try:
                     response = requests.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
-                    log_message = f"[QUERY] {injected_url} -> {response.status_code}\n"
+                    log_message = f"\n[QUERY] {injected_url} -> {response.status_code}\n"
                     print(Fore.GREEN + log_message.strip())
                     log_file.write(Fore.GREEN + log_message)
                 except requests.exceptions.RequestException as req_err:
-                    error_message = f"[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}\n"
+                    error_message = f"\n[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}\n"
                     print(Fore.RED + error_message.strip())
                     log_file.write(Fore.RED + error_message)
 
@@ -69,15 +69,15 @@ def test_redirect(url, payload, log_file):
                 injected_url = url.rstrip("/") + "/" + urllib.parse.quote_plus(payload)
                 try:
                     response = requests.get(injected_url, allow_redirects=False, timeout=TIMEOUT)
-                    log_message = f"[PATH] {injected_url} -> {response.status_code}\n"
+                    log_message = f"\n[PATH] {injected_url} -> {response.status_code}\n"
                     print(Fore.GREEN + log_message.strip())
                     log_file.write(Fore.GREEN + log_message)
                 except requests.exceptions.RequestException as req_err:
-                    error_message = f"[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}\n"
+                    error_message = f"\n[ERROR] Timeout or request failed for {injected_url}: {str(req_err)}\n"
                     print(Fore.RED + error_message.strip())
                     log_file.write(Fore.RED + error_message)
     except Exception as e:
-        print(f"{Fore.RED}[ERROR] {url}: {str(e)}")
+        print(f"\n{Fore.RED}[ERROR] {url}: {str(e)}\n")
 
 # Function to start scanning with threading using ThreadPoolExecutor
 def scan_urls(bug_path, urls, payloads):
