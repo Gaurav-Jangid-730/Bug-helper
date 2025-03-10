@@ -74,10 +74,9 @@ def subdomain_finding(target, target_dir, enable_bruteforce):
     merge_and_sort_files(subdomain_list_file, final_subdomains_file)
 
     commands.append(f"dnsx -l {subdomain_list_file} -o {resolved_subdomains_file}")
-    
-    # Remove unnecessary files
+
+    run_section("Subdomain Enumeration, Discovery, Bruteforce, and Resolving", commands)
+        # Remove unnecessary files
     safe_remove_files([subdomains, subdomain_list_file, f"{target_dir}/sub-{target}.txt", 
                        f"{target_dir}/asset-{target}.txt", f"{target_dir}/sub-find-{target}.txt", 
                        f"{target_dir}/findomain-{target}.txt", subdomains2, final_subdomains_file])
-
-    run_section("Subdomain Enumeration, Discovery, Bruteforce, and Resolving", commands)
