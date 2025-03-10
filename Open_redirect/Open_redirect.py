@@ -2,17 +2,17 @@ import requests
 import os
 import urllib.parse
 import threading
+from itertools import islice
 from queue import Queue, Empty
 from concurrent.futures import ThreadPoolExecutor
 from Start_up.remove_file import delete_empty_text_files
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from colorama import Fore, Style, init
 import multiprocessing
 
 init(autoreset=True)
 
 MAX_WORKERS = min(10, multiprocessing.cpu_count() * 2)  # Reduce worker threads to prevent memory exhaustion
-MAX_PAYLOADS = 5  # Reduce the number of payloads tested per URL batch
-MAX_URLS = 5  # Reduce the number of URLs processed at once
 
 redirect_params = {
     "redirect", "url", "next", "return", "r", "u", "goto", "target",
@@ -29,12 +29,32 @@ redirect_paths = {
 
 log_queue = Queue(maxsize=1000)  # Prevent unbounded memory usage in logging
 
+def read_urls_in_batches(filename, batch_size=10):
+    """Generator to read a file in batches of 10 URLs at a time"""
+    try:
+        with open(filename, 'r') as file:
+            while True:
+                batch = list(islice(file, batch_size))  # Read next 10 URLs
+                if not batch:
+                    break
+                yield [url.strip() for url in batch]  # Yield cleaned URLs
+    except FileNotFoundError:
+        print(f"{Fore.RED}[-] Input file {filename} not found!{Style.RESET_ALL}")
+        return
+
+def inject_query(url, param, payload):
+    parsed_url = urlparse(url)
+    query_params = parse_qs(parsed_url.query)
+    query_params[param] = payload  # Inject payload
+    new_query = urlencode(query_params, doseq=True)
+    return urlunparse(parsed_url._replace(query=new_query))
+
 # Initialize a session to reuse TCP connections
 session = requests.Session()
 
 def log_writer(log_file_path):
     """ Writes logs asynchronously to avoid memory buildup. """
-    with open(log_file_path, 'a',buffering=1) as log_file:
+    with open(log_file_path, 'a',encoding='utf-8') as log_file:
         while True:
             try:
                 message = log_queue.get(timeout=2)
@@ -63,7 +83,7 @@ def test_redirect(url, payload):
         # Test query-based injection
         for param in query_params:
             if param in redirect_params:
-                injected_url = f"{url}&{param}={urllib.parse.quote_plus(payload)}"
+                injected_url = inject_query(url, param, payload)
                 try:
                     response = session.get(injected_url, allow_redirects=False, timeout=(5, 10))
                     if response.status_code in [301, 302, 303, 307, 308] and 'Location' in response.headers:
@@ -96,13 +116,9 @@ def scan_urls(bug_path, urls, payloads):
     log_thread.start()
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        for x in range(0, len(urls), MAX_URLS):
-            url_batch = urls[x : x + MAX_URLS]
-            for url in url_batch:
-                for i in range(0, len(payloads), MAX_PAYLOADS):  
-                    batch = payloads[i : i + MAX_PAYLOADS]
-                    for payload in batch:
-                        executor.submit(test_redirect, url, payload)
+            for url in urls:
+                for payload in payloads:
+                    executor.submit(test_redirect, url, payload)
 
     log_queue.put(None)  
     log_thread.join()  
@@ -113,22 +129,10 @@ def open_redirect(bug_path, target):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(script_dir, "payloads.txt")
     
-    try:
-        with open(input_file, "r") as f:
-            urls = [line.strip() for line in f.readlines()]
-    except FileNotFoundError:
-        print(f"{Fore.RED}[-] Input file {input_file} not found!{Style.RESET_ALL}")
-        return
-    
-    try:
-        with open(file_path, "r") as f:
-            payloads = [line.strip() for line in f.readlines()]
-    except FileNotFoundError:
-        print(f"{Fore.RED}[-] Payloads file at path {file_path} is not found!{Style.RESET_ALL}")
-        return
-
-    filtered_urls = filter_urls(urls)
-    print(f"{Fore.BLUE}Filtered {len(filtered_urls)} potential redirect URLs from {len(urls)} total URLs.")
-
-    scan_urls(bug_path, filtered_urls, payloads)
+    for urls in read_urls_in_batches(input_file,10):
+            filtered_urls = filter_urls(urls)
+            if filtered_urls:
+                print(f"{Fore.BLUE}Filtered {len(filtered_urls)} potential redirect URLs from {len(urls)} total URLs.")
+                for payloads in read_urls_in_batches(file_path,10):
+                        scan_urls(bug_path, filtered_urls, payloads)  
     delete_empty_text_files(bug_path)
