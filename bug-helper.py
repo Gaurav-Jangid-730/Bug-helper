@@ -11,6 +11,7 @@ from Subdomain_takeover.subdomain_takeover import subdomain_takeover
 from Open_redirect.Open_redirect import open_redirect
 from DNS_Enumration.DNS_Transfer import DNS_transfer
 from URL_Extractor.url_finder import Url_finding
+from Host_Header_injection.host_header import host_header_scan
 from XSS_scanner.xss_scanning import xss_scanning
 from colorama import Fore, init
 
@@ -83,7 +84,8 @@ def execute_functions(selected_functions, target, target_dir, enable_bruteforce)
         3: lambda: subdomain_takeover(target_dir, f'{target_dir}/resolved-final-subdomains.txt'),
         4: lambda: Url_finding(target, target_dir),
         5: lambda: open_redirect(target_dir, target),
-        # 6: lambda: xss_scanning(target_dir)
+        6: lambda: host_header_scan(target_dir,target)
+        # 7: lambda: xss_scanning(target_dir)
     }
     
     if 0 in selected_functions:
@@ -113,6 +115,7 @@ if __name__ == "__main__":
     print("3 - Performing Subdomain Takeover")
     print("4 - URL Extraction")
     print("5 - Open Redirection Bug")
+    print("6 - Host Header Injection")
     # print("6 - XSS Scanning")
     
     selected_input = input(f"{Fore.YELLOW}Enter function numbers (e.g., 1-2 3 6): ")
