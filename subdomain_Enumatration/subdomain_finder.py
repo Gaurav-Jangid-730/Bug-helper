@@ -16,13 +16,19 @@ def safe_remove_files(files):
             os.remove(file)
 
 def merge_and_sort_files(output_file, *input_files):
-    """Merges multiple files, sorts lines uniquely, and writes to an output file."""
+    """Merges multiple existing files, sorts lines uniquely, and writes to an output file."""
     unique_lines = set()
-    for file in input_files:
-        unique_lines.update(safe_read_file(file))
     
+    for file in input_files:
+        if os.path.exists(file):  # Only read files that exist
+            with open(file, "r") as f:
+                unique_lines.update(line.strip() for line in f.readlines())
+
+    # Always create the output file, even if no input files exist
     with open(output_file, "w") as out_file:
-        out_file.writelines(sorted(unique_lines, key=str.lower))
+        out_file.writelines(line + '\n' for line in sorted(unique_lines, key=str.lower))
+
+    print(f"[INFO] Merged {len(unique_lines)} unique lines into {output_file}")
 
 def subdomain_finding(target, target_dir, enable_bruteforce):
     commands = [
