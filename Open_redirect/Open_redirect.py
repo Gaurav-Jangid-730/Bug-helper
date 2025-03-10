@@ -78,6 +78,7 @@ def test_redirect(url, payload):
     """ Tests for open redirect vulnerabilities in a URL. """
     try:
         parsed_url = urllib.parse.urlparse(url)
+        original_domain = parsed_url.netloc  # Extract domain of the input URL
         query_params = urllib.parse.parse_qs(parsed_url.query)
         
         # Test query-based injection
@@ -86,8 +87,15 @@ def test_redirect(url, payload):
                 injected_url = inject_query(url, param, payload)
                 try:
                     response = session.get(injected_url, allow_redirects=False, timeout=(5, 10))
+                    
                     if response.status_code in [301, 302, 303, 307, 308] and 'Location' in response.headers:
-                        log_queue.put(f"{Fore.GREEN}[QUERY] {injected_url} -> {response.status_code} Redirects to: {response.headers['Location']}")
+                        redirected_url = response.headers['Location']
+                        redirected_domain = urllib.parse.urlparse(redirected_url).netloc
+
+                        if redirected_domain and redirected_domain != original_domain:
+                            log_queue.put(f"{Fore.GREEN}[TRUE POSITIVE] {injected_url} -> {response.status_code} Redirects to: {redirected_url}")
+                        else:
+                            log_queue.put(f"{Fore.YELLOW}[FALSE POSITIVE] {injected_url} -> Redirected to same domain: {redirected_url}")
                     else:
                         log_queue.put(f"{Fore.YELLOW}[QUERY] {injected_url} -> {response.status_code} No Redirect Detected")
                 except requests.RequestException as req_err:
@@ -99,14 +107,22 @@ def test_redirect(url, payload):
                 injected_url = f"{url.rstrip('/')}/{urllib.parse.quote_plus(payload)}"
                 try:
                     response = session.get(injected_url, allow_redirects=False, timeout=(5, 10))
+                    
                     if response.status_code in [301, 302, 303, 307, 308] and 'Location' in response.headers:
-                        log_queue.put(f"{Fore.GREEN}[PATH] {injected_url} -> {response.status_code} Redirects to: {response.headers['Location']}")
+                        redirected_url = response.headers['Location']
+                        redirected_domain = urllib.parse.urlparse(redirected_url).netloc
+
+                        if redirected_domain and redirected_domain != original_domain:
+                            log_queue.put(f"{Fore.GREEN}[TRUE POSITIVE] {injected_url} -> {response.status_code} Redirects to: {redirected_url}")
+                        else:
+                            log_queue.put(f"{Fore.YELLOW}[FALSE POSITIVE] {injected_url} -> Redirected to same domain: {redirected_url}")
                     else:
                         log_queue.put(f"{Fore.YELLOW}[PATH] {injected_url} -> {response.status_code} No Redirect Detected")
                 except requests.RequestException as req_err:
                     log_queue.put(f"{Fore.RED}[ERROR] {injected_url}: {str(req_err)}")
     except Exception as e:
         log_queue.put(f"{Fore.RED}[ERROR] {url}: {str(e)}")
+
 
 def scan_urls(bug_path, urls, payloads):
     """ Uses a thread pool to scan URLs in batches. """
