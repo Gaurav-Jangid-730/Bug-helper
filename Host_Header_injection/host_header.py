@@ -60,11 +60,11 @@ def test_host_header(url):
                 if response.status_code in [200, 302]:
                     log_queue.put(f"{Fore.GREEN}[POTENTIAL VULNERABILITY] {url} with headers {headers} -> {response.status_code}")
                 else:
-                    log_queue.put(f"{Fore.YELLOW}[NO VULNERABILITY] {url} with headers {headers} -> {response.status_code}")
+                    print(f"{Fore.YELLOW}[NO VULNERABILITY] {url} with headers {headers} -> {response.status_code}")
             except requests.RequestException as err:
-                log_queue.put(f"{Fore.RED}[ERROR] {url} with headers {headers}: {str(err)}")
+                print(f"{Fore.RED}[ERROR] {url} with headers {headers}: {str(err)}")
     except Exception as e:
-        log_queue.put(f"{Fore.RED}[ERROR] {url}: {str(e)}")
+        print(f"{Fore.RED}[ERROR] {url}: {str(e)}")
 
 def scan_host_headers(bug_path, urls):
     """Uses threading to scan for Host Header vulnerabilities."""
