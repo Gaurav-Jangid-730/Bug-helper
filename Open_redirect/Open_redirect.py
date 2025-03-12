@@ -95,11 +95,11 @@ def test_redirect(url, payload):
                         if redirected_domain and redirected_domain != original_domain:
                             log_queue.put(f"{Fore.GREEN}[TRUE POSITIVE] {injected_url} -> {response.status_code} Redirects to: {redirected_url}")
                         else:
-                            print(f"{Fore.YELLOW}[FALSE POSITIVE] {injected_url} -> Redirected to same domain: {redirected_url}")
+                            print(f"{Fore.YELLOW}[FALSE POSITIVE] {injected_url} -> Redirected to same domain: {redirected_url}\n")
                     else:
-                        print(f"{Fore.YELLOW}[QUERY] {injected_url} -> {response.status_code} No Redirect Detected")
+                        print(f"{Fore.YELLOW}[QUERY] {injected_url} -> {response.status_code} No Redirect Detected\n")
                 except requests.RequestException as req_err:
-                    print(f"{Fore.RED}[ERROR] {injected_url}: {str(req_err)}")
+                    print(f"{Fore.RED}[ERROR] {injected_url}: {str(req_err)}\n")
 
         # Test path-based injection
         for path in redirect_paths:
@@ -115,13 +115,13 @@ def test_redirect(url, payload):
                         if redirected_domain and redirected_domain != original_domain:
                             log_queue.put(f"{Fore.GREEN}[TRUE POSITIVE] {injected_url} -> {response.status_code} Redirects to: {redirected_url}")
                         else:
-                            print(f"{Fore.YELLOW}[FALSE POSITIVE] {injected_url} -> Redirected to same domain: {redirected_url}")
+                            print(f"{Fore.YELLOW}[FALSE POSITIVE] {injected_url} -> Redirected to same domain: {redirected_url}\n")
                     else:
-                        print(f"{Fore.YELLOW}[PATH] {injected_url} -> {response.status_code} No Redirect Detected")
+                        print(f"{Fore.YELLOW}[PATH] {injected_url} -> {response.status_code} No Redirect Detected\n")
                 except requests.RequestException as req_err:
-                    print(f"{Fore.RED}[ERROR] {injected_url}: {str(req_err)}")
+                    print(f"{Fore.RED}[ERROR] {injected_url}: {str(req_err)}\n")
     except Exception as e:
-        print(f"{Fore.RED}[ERROR] {url}: {str(e)}")
+        print(f"{Fore.RED}[ERROR] {url}: {str(e)}\n")
 
 
 def scan_urls(bug_path, urls, payloads):
